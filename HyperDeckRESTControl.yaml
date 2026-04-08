@@ -1,0 +1,2752 @@
+openapi: 3.0.1
+info:
+  title: HyperDeck Control API
+  description: API for controlling Blackmagic Design HyperDeck products
+  version: 1.0.0
+servers:
+- url: '{protocol}://{hostname}/control/api/v1'
+  variables:
+    protocol:
+      enum:
+      - http
+      - https
+      default: http
+      description: Protocol
+    hostname:
+      default: hostname-or-ip
+      description: Device hostname
+paths:
+  /media/workingset:
+    get:
+      summary: Get the list of media devices currently in the working set.
+      tags:
+      - Media
+      responses:
+        200:
+          description: The list of media devices in the working set.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Workingset'
+  /media/active:
+    get:
+      summary: Get the currently active media device.
+      tags:
+      - Media
+      responses:
+        200:
+          description: The current active media device.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActiveMedia'
+        204:
+          description: No media is currently active.
+    put:
+      summary: Set the currently active media device.
+      tags:
+      - Media
+      requestBody:
+        description: Set the specified index to be active.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                workingsetIndex:
+                  type: integer
+                  description: Working set index of the media to make active.
+                  example: 0
+      responses:
+        204:
+          description: The active media device was set successfully.
+        400:
+          description: Setting the currently active media device is not possible in the current state.
+  /media/devices/doformatSupportedFilesystems:
+    get:
+      summary: Get the list of filesystems available to format a media device.
+      tags:
+      - Media
+      responses:
+        200:
+          description: The list of filesystems permitted for formatting.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DoFormatSupportedFilesystems'
+  /media/devices/{deviceName}:
+    get:
+      summary: Get information about a requested device.
+      tags:
+      - Media
+      parameters:
+      - $ref: '#/components/parameters/DeviceNameParameter'
+      responses:
+        200:
+          description: Information about the requested device.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaDeviceInformation'
+        400:
+          description: Invalid device name.
+        404:
+          description: Device not found.
+  /media/devices/{deviceName}/doformat:
+    get:
+      summary: Get a format key, used to format the device with a PUT request.
+      tags:
+      - Media
+      parameters:
+      - $ref: '#/components/parameters/DeviceNameParameter'
+      responses:
+        200:
+          description: Format prepared.
+          content:
+            application/json:
+              schema:
+                properties:
+                  deviceName:
+                    type: string
+                    example: sd1
+                    description: Device name of media device to format.
+                  key:
+                    type: string
+                    description: The key required to format this device, provide to PUT /media/devices/{deviceName}/doformat to perform format of media device.
+        400:
+          description: Cannot format the device.
+        404:
+          description: Device not found.
+    put:
+      summary: Perform a format of the specified media device.
+      tags:
+      - Media
+      parameters:
+      - $ref: '#/components/parameters/DeviceNameParameter'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                key:
+                  type: string
+                  description: The key used to format this device, retrieved from prepare format media request GET /media/devices/{deviceName}/doformat. Format key provided cannot be reused after successful format.
+                filesystem:
+                  type: string
+                  example: ExFAT
+                  description: Filesystem to format to. Supported filesystems can be retrieved with GET /media/devices/doFormatSupportedFilesystems.
+                volume:
+                  type: string
+                  description: Volume name to set for the disk after format.
+      responses:
+        204:
+          description: Format successful.
+        400:
+          description: Cannot format the device, invalid filesystem or key.
+        404:
+          description: Device not found.
+  /transports/0:
+    get:
+      tags:
+      - Transport
+      summary: Get device's basic transport status.
+      responses:
+        200:
+          description: Transport status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransportResponse'
+    put:
+      summary: Set device's basic transport status.
+      tags:
+      - Transport
+      requestBody:
+        description: Set the transport mode.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mode:
+                  type: string
+                  description: Transport mode.
+                  example: InputPreview
+                  enum:
+                  - InputPreview
+                  - Output
+      responses:
+        204:
+          description: Transport mode was set.
+        400:
+          description: Failed to set transport mode.
+  /transports/0/stop:
+    get:
+      summary: Determine if transport is stopped.
+      tags:
+      - Transport
+      responses:
+        200:
+          description: Transport stop response.
+          content:
+            application/json:
+              schema:
+                description: True when transport mode is InputPreview or when in Output mode and speed is 0.
+                type: boolean
+    put:
+      summary: Stop transport. Deprecated, use POST /transports/0/stop instead.
+      deprecated: true
+      tags:
+      - Transport
+      responses:
+        204:
+          description: Transport stopped.
+    post:
+      summary: Stop transport.
+      tags:
+      - Transport
+      responses:
+        204:
+          description: Transport stopped.
+  /transports/0/play:
+    get:
+      summary: Determine if transport is playing.
+      tags:
+      - Transport
+      responses:
+        200:
+          description: Transport play response.
+          content:
+            application/json:
+              schema:
+                description: True when transport is in Output mode and speed is non-zero.
+                type: boolean
+    put:
+      summary: Start playing on transport. Deprecated, use POST /transports/0/play instead.
+      deprecated: true
+      tags:
+      - Transport
+      responses:
+        204:
+          description: Transport playing.
+        400:
+          description: Failed to set transport to play.
+    post:
+      summary: Start playing on transport.
+      tags:
+      - Transport
+      responses:
+        204:
+          description: Transport playing.
+        400:
+          description: Failed to set transport to play.
+  /transports/0/playback:
+    get:
+      summary: Get playback state.
+      tags:
+      - Transport
+      responses:
+        200:
+          description: Transport playback state.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Playback'
+    put:
+      summary: Set playback state.
+      tags:
+      - Transport
+      requestBody:
+        description: Update playback state.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Playback'
+      responses:
+        204:
+          description: Updated transport playback state.
+        400:
+          description: Failed to set transport playback state.
+  /transports/0/record:
+    get:
+      summary: Get record state.
+      tags:
+      - Transport
+      responses:
+        200:
+          description: Recording state.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetRecord'
+    put:
+      summary: Set record state. Deprecated, use POST /transports/0/record instead.
+      deprecated: true
+      tags:
+      - Transport
+      requestBody:
+        description: Update record state.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutRecord'
+      responses:
+        204:
+          description: Recording state updated.
+        400:
+          description: Failed to update recording state.
+    post:
+      summary: Start recording.
+      tags:
+      - Transport
+      requestBody:
+        description: Optional additional recording information, omit request body to use device defaults.
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Record'
+      responses:
+        204:
+          description: Recording started.
+        400:
+          description: Failed to start recording.
+  /transports/0/clipIndex:
+    get:
+      summary: Get the clip index of the currently playing clip on the timeline.
+      tags:
+      - Transport
+      responses:
+        200:
+          description: Clip index response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClipIndex'
+              examples:
+                NoOrEmptyTimeline:
+                  value:
+                    clipIndex: null
+                PlayingFirstClip:
+                  value:
+                    clipIndex: 0
+                PlayingSecondClip:
+                  value:
+                    clipIndex: 1
+  /transports/0/timecode:
+    get:
+      summary: Get device timecode.
+      tags:
+      - Transport
+      responses:
+        200:
+          description: Timecode response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Timecode'
+  /transports/0/timecode/source:
+    get:
+      summary: Get timecode source selected on device.
+      tags:
+      - Transport
+      responses:
+        200:
+          description: Timecode source response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimecodeSource'
+  /clips:
+    get:
+      summary: Get the list of clips on the active disk.
+      tags:
+      - Clips
+      responses:
+        200:
+          description: List of clips on the active disk.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Clips'
+        404:
+          description: There is no active disk.
+  /system:
+    get:
+      summary: Get device system information.
+      tags:
+      - System
+      responses:
+        200:
+          description: System summary.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemResponse'
+        501:
+          description: This functionality is not implemented for the device in use.
+  /system/product:
+    get:
+      summary: Get device product information.
+      tags:
+      - System
+      responses:
+        200:
+          description: Device product information.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductInfo'
+        501:
+          description: This functionality is not implemented for the device in use.
+  /system/supportedCodecFormats:
+    get:
+      summary: Get the list of supported codecs.
+      tags:
+      - System
+      responses:
+        200:
+          description: List of supported codec formats.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportedCodecFormats'
+        501:
+          description: This functionality is not implemented for the device in use.
+  /system/codecFormat:
+    get:
+      summary: Get the currently selected codec.
+      tags:
+      - System
+      responses:
+        200:
+          description: Current system codec format.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CodecFormat'
+    put:
+      summary: 'Set the codec.
+
+
+        Note that some codec formats can be played back but not recorded to.
+
+        For example, some products support playback but not recording in H.264 codec in MOV container.
+
+        In this case, omit the "container" field when setting codec.
+
+
+        Note that for some products that support timeline playback, you can choose any codec within a codec family
+
+        (e.g. H.264, H.265, ProRes, ...), and the timeline will be populated with all compatible clips with that codec.
+
+
+        The H.264 and H.265 codec formats do not preserve the exact recorder configuration when observing the codecFormat property of a recorded clip.
+
+        E.g. if a clip was recorded using "H264:High" codec format it will appear as "H264:Medium" in the response to GET /clips.
+
+        '
+      tags:
+      - System
+      requestBody:
+        description: Update the system codec.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CodecFormat'
+      responses:
+        204:
+          description: The codec updated successfully.
+        400:
+          description: The specified codec format is unsupported.
+  /system/videoFormat:
+    get:
+      summary: Get the current system video format, which is either the timeline video format (GET /timelines/0/videoFormat) or the input video format (GET /transports/0/inputVideoFormat) depending on transport mode.
+      tags:
+      - System
+      responses:
+        200:
+          description: Current system video format.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSystemVideoFormat'
+    put:
+      summary: Set the timeline video format. Deprecated, prefer to use PUT /timelines/0/videoFormat to set the timeline video format.
+      deprecated: true
+      tags:
+      - System
+      requestBody:
+        description: Update the system video format.
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - $ref: '#/components/schemas/PutVideoFormatName'
+              - $ref: '#/components/schemas/PutVideoFormatDetailed'
+      responses:
+        204:
+          description: The video format updated successfully.
+        400:
+          description: Invalid request.
+        409:
+          description: Operation unsupported in the current state.
+  /system/supportedVideoFormats:
+    get:
+      summary: Get the list of supported video formats for the current system state.
+      tags:
+      - System
+      responses:
+        200:
+          description: List of supported video formats.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportedVideoFormats'
+        501:
+          description: This functionality is not implemented for the device in use.
+  /monitoring/display:
+    get:
+      summary: Retrieve a list of all display names.
+      tags:
+      - Monitoring
+      responses:
+        200:
+          description: Returns a list of display names.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  displays:
+                    type: array
+                    items:
+                      type: string
+                    description: List of display names available.
+                    example:
+                    - LCD1
+                    - SDIA
+                    - HDMI
+  /monitoring/{displayName}/cleanFeed:
+    get:
+      summary: Get the clean feed enable state for a specific display.
+      tags:
+      - Monitoring
+      parameters:
+      - $ref: '#/components/parameters/displayName'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnableState'
+        404:
+          description: Display name not found.
+    put:
+      summary: Set the clean feed enable state for a specific display.
+      tags:
+      - Monitoring
+      parameters:
+      - $ref: '#/components/parameters/displayName'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnableState'
+      responses:
+        204:
+          description: Clean feed enabled/disabled successfully.
+        400:
+          description: Invalid input.
+        422:
+          description: Unable to process the contained instructions.
+  /monitoring/{displayName}/displayLUT:
+    get:
+      summary: Get the display LUT enable state for a specific display.
+      tags:
+      - Monitoring
+      parameters:
+      - $ref: '#/components/parameters/displayName'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnableState'
+        400:
+          description: Invalid display name.
+        404:
+          description: Display name not found.
+    put:
+      summary: Set the display LUT enable state for a specific display.
+      tags:
+      - Monitoring
+      parameters:
+      - $ref: '#/components/parameters/displayName'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnableState'
+      responses:
+        204:
+          description: Display LUT enabled/disabled successfully.
+        400:
+          description: Invalid input.
+        422:
+          description: Unprocessable Entity - Unable to process the contained instructions.
+  /monitoring/{displayName}/zebra:
+    get:
+      summary: Get the zebra enable state for a specific display.
+      tags:
+      - Monitoring
+      parameters:
+      - $ref: '#/components/parameters/displayName'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnableState'
+        404:
+          description: Display name not found.
+    put:
+      summary: Set the zebra enable state for a specific display.
+      tags:
+      - Monitoring
+      parameters:
+      - $ref: '#/components/parameters/displayName'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnableState'
+      responses:
+        204:
+          description: Zebra enabled/disabled successfully.
+        400:
+          description: Invalid input.
+        422:
+          description: Unable to process the contained instructions.
+  /monitoring/{displayName}/focusAssist:
+    get:
+      summary: Get the focus assist enable state for a specific display.
+      tags:
+      - Monitoring
+      parameters:
+      - $ref: '#/components/parameters/displayName'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnableState'
+        404:
+          description: Display name not found.
+    put:
+      summary: Set the focus assist enable state for a specific display.
+      tags:
+      - Monitoring
+      parameters:
+      - $ref: '#/components/parameters/displayName'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FocusAssistState'
+      responses:
+        204:
+          description: Focus assist settings updated successfully.
+        400:
+          description: Invalid input or configuration.
+        422:
+          description: Unable to process the contained instructions.
+  /monitoring/focusAssist:
+    get:
+      summary: Get the focus assist settings.
+      tags:
+      - Monitoring
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FocusAssistState'
+        404:
+          description: Display name not found.
+    put:
+      summary: Set the focus assist settings.
+      tags:
+      - Monitoring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FocusAssistState'
+      responses:
+        204:
+          description: Focus assist settings updated successfully.
+        400:
+          description: Invalid input or configuration.
+        422:
+          description: Unable to process the contained instructions.
+  /monitoring/{displayName}/frameGuide:
+    get:
+      summary: Get the frame guide enable state for a specific display.
+      tags:
+      - Monitoring
+      parameters:
+      - $ref: '#/components/parameters/displayName'
+      responses:
+        200:
+          description: Returns the frame guide enable state.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnableState'
+        404:
+          description: Display not found.
+    put:
+      summary: Set the frame guide enable state for a specific display.
+      tags:
+      - Monitoring
+      parameters:
+      - $ref: '#/components/parameters/displayName'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnableState'
+      responses:
+        204:
+          description: Frame guide state updated successfully.
+        422:
+          description: Unable to update the frame guide state.
+  /monitoring/frameGuideRatio:
+    get:
+      summary: Get the current frame guide ratio.
+      tags:
+      - Monitoring
+      responses:
+        200:
+          description: Returns the current frame guide ratio.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RatioState'
+    put:
+      summary: Set the frame guide ratio.
+      tags:
+      - Monitoring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RatioState'
+      responses:
+        204:
+          description: Frame guide ratio updated successfully.
+        422:
+          description: Unable to update the frame guide ratio.
+  /monitoring/frameGuideRatio/presets:
+    get:
+      summary: Get the presets for frame guide ratios.
+      tags:
+      - Monitoring
+      responses:
+        200:
+          description: Returns a list of preset frame guide ratios.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  presets:
+                    type: array
+                    items:
+                      type: string
+                      description: A frame guide ratio.
+                    example:
+                    - '4:3'
+                    - '16:9'
+                    - 2.35:1
+  /monitoring/{displayName}/frameGrids:
+    get:
+      summary: Get the frame grids enable state for a specific display.
+      tags:
+      - Monitoring
+      parameters:
+      - $ref: '#/components/parameters/displayName'
+      responses:
+        200:
+          description: Returns the frame grids enable state.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnableState'
+        404:
+          description: Display not found.
+    put:
+      summary: Set the frame grids enable state for a specific display.
+      tags:
+      - Monitoring
+      parameters:
+      - $ref: '#/components/parameters/displayName'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnableState'
+      responses:
+        204:
+          description: Frame grids state updated successfully.
+        422:
+          description: Unable to update the frame grids state.
+  /monitoring/frameGrids:
+    get:
+      summary: Get the global frame grids settings.
+      tags:
+      - Monitoring
+      responses:
+        200:
+          description: Returns the current frame grids settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FrameGrids'
+    put:
+      summary: Set the global frame grids settings.
+      tags:
+      - Monitoring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FrameGrids'
+      responses:
+        204:
+          description: Frame grids settings updated successfully.
+        400:
+          description: Invalid input, check the number of frame grids or values.
+        422:
+          description: Unable to update the frame grids settings.
+  /monitoring/{displayName}/falseColor:
+    get:
+      summary: Get the false color enable state for a specific display.
+      tags:
+      - Monitoring
+      parameters:
+      - $ref: '#/components/parameters/displayName'
+      responses:
+        200:
+          description: Returns the false color enable state.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnableState'
+        404:
+          description: Display not found.
+    put:
+      summary: Set the false color enable state for a specific display.
+      tags:
+      - Monitoring
+      parameters:
+      - $ref: '#/components/parameters/displayName'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnableState'
+      responses:
+        204:
+          description: False color state updated successfully.
+        422:
+          description: Unable to update the false color state.
+  /timelines/0:
+    get:
+      summary: Get the playback timeline.
+      tags:
+      - Timeline
+      responses:
+        200:
+          description: Playback timeline.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Timeline'
+        404:
+          description: No timeline / disk available.
+    delete:
+      summary: Clear the current playback timeline. Deprecated, prefer to use POST /timelines/0/clear
+      tags:
+      - Timeline
+      deprecated: true
+      responses:
+        204:
+          description: The timeline was cleared.
+        501:
+          description: The operation is not supported on this device.
+    post:
+      summary: Add a clip to the timeline.
+      tags:
+      - Timeline
+      requestBody:
+        description: Clip information to add.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddClipToTimeline'
+            examples:
+              AddClipWithClipUniqueId42:
+                description: Adds a clip with clipUniqueId 42 to the end of the timeline.
+                value:
+                  clips: 42
+              AddClipWithClipUniqueId42ToStart:
+                description: Adds a clip with clipUniqueId 42 to the start of the timeline.
+                value:
+                  insertBefore: 0
+                  clips: 42
+              AddClipWithClipUniqueId42BeforeSecondClip:
+                description: Adds a clip with clipUniqueId 42 before the second clip in the timeline.
+                value:
+                  insertBefore: 1
+                  clips: 42
+              AddClipWithClipUniqueId42AnotherWay:
+                description: Adds a clip with clipUniqueId 42 to the end of the timeline.
+                value:
+                  clips:
+                    clipUniqueId: 42
+              AddClipWithClipUniqueId42CroppedStart:
+                description: Adds a clip with clipUniqueId 42, starting from the tenth frame of the clip, to the end of the timeline.
+                value:
+                  clips:
+                    clipUniqueId: 42
+                    clipIn: 9
+              AddClipWithClipUniqueId42CroppedEnd:
+                description: Adds a clip with clipUniqueId 42, using only the first 30 frames, to the end of the timeline.
+                value:
+                  clips:
+                    clipUniqueId: 42
+                    frameCount: 30
+              AddTheSameClipManyTimes:
+                description: Adds 3 instances of the clip with clipUniqueId 42 to the end of the timeline.
+                value:
+                  clips:
+                  - 42
+                  - 42
+                  - 42
+              AddMultipleClips:
+                description: Adds clips with clipUniqueIds 42, 10, 23 and 42 to the end of the timeline.
+                value:
+                  clips:
+                  - 42
+                  - 10
+                  - 23
+                  - 42
+              AddVariousClips:
+                description: Adds various clips to the timeline before the seconds clip.
+                value:
+                  insertBefore: 1
+                  clips:
+                  - 42
+                  - 10
+                  - clipUniqueId: 42
+                  - clipUniqueId: 2
+                    frameCount: 10
+                    clipIn: 10
+      responses:
+        204:
+          description: The clip was added to the timeline as specified.
+        501:
+          description: The operation is not supported on this device.
+  /timelines/0/add:
+    post:
+      summary: Add a clip to the end of the timeline. Deprecated, use POST /timelines/0 to add clips within the timeline.
+      tags:
+      - Timeline
+      deprecated: true
+      requestBody:
+        description: Clip(s) to add to the end of the timeline.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddClipsToEndOfTimelineDeprecated'
+            examples:
+              AddClipWithClipUniqueId42:
+                description: Adds a clip with clipUniqueId 42 to the end of the timeline.
+                value:
+                  clips: 42
+              AddTheSameClipManyTimes:
+                description: Adds 3 instances of the clip with clipUniqueId 42 to the end of the timeline.
+                value:
+                  clips:
+                  - 42
+                  - 42
+                  - 42
+              AddMultipleClips:
+                description: Adds clips with clipUniqueIds 42, 10, 23 and 42 to the end of the timeline.
+                value:
+                  clips:
+                  - 42
+                  - 10
+                  - 23
+                  - 42
+      responses:
+        204:
+          description: The clip was added to the end of the timeline.
+        501:
+          description: The operation is not supported on this device.
+  /timelines/0/clear:
+    post:
+      summary: Clear the playback timeline.
+      tags:
+      - Timeline
+      responses:
+        204:
+          description: The timeline was cleared.
+        501:
+          description: The operation is not supported on this device.
+  /timelines/0/clips/{timelineClipIndex}:
+    delete:
+      tags:
+      - Timeline
+      parameters:
+      - name: timelineClipIndex
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: The (0-based) timeline clip index of the clip to remove from the timeline.
+        example:
+          value: 0
+          summary: Delete the first clip in the timeline.
+      summary: Remove the specified clip from the timeline.
+      responses:
+        204:
+          description: The specified clip was removed from the timeline.
+        501:
+          description: The operation is not supported on this device.
+  /event/list:
+    get:
+      summary: Get the list of events that can be subscribed to using the websocket API.
+      tags:
+      - Event
+      responses:
+        200:
+          description: Websocket API events list.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/eventsList'
+  /system/reboot:
+    post:
+      tags:
+      - System
+      summary: Reboots the device.
+      responses:
+        204:
+          description: The device will reboot immediately.
+        409:
+          description: Rebooting is not possible in the current state.
+  /system/uptime:
+    get:
+      summary: Gets the current system uptime.
+      tags:
+      - System
+      responses:
+        200:
+          description: The current system uptime.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Uptime'
+  /system/identify:
+    put:
+      tags:
+      - System
+      summary: Sets the identify mode.  If set to true, will exit identify mode after 10 seconds.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetIdentify'
+      responses:
+        204:
+          description: Identify updated successfully.
+  /transports/0/recordCache:
+    get:
+      tags:
+      - Record Cache
+      summary: Gets information about the recording cache.
+      responses:
+        200:
+          description: Current information about the recording cache.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordCache'
+              examples:
+                Contains Cache:
+                  value:
+                    status: idle
+                    remainingRecordingTime: 42200
+                    transferringDevice: ssd1
+                Contains No Cache:
+                  value:
+                    status: undetected
+  /transports/0/recordCache/enabled:
+    get:
+      tags:
+      - Record Cache
+      summary: Checks if the record cache is enabled.
+      responses:
+        200:
+          description: Record cache enabled status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordCacheEnabled'
+    put:
+      tags:
+      - Record Cache
+      summary: Enables or disables the record cache.  Has no effect if cache is not supported / installed / formatted.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetRecordCacheEnabled'
+      responses:
+        204:
+          description: Record cache enabled / disabled was changed.
+  /transports/0/record/spillOrder:
+    get:
+      tags:
+      - Spill
+      summary: Gets media devices in order of which will next be spilled to during recording.
+      responses:
+        200:
+          description: The media device spill order.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSpillOrder'
+  /transports/0/record/spillToNewFile:
+    post:
+      tags:
+      - Spill
+      summary: Spill recording to a new file on the active media.
+      responses:
+        204:
+          description: Spilled recording to a new file on the active media.
+  /transports/0/record/spillToNextDevice:
+    post:
+      tags:
+      - Spill
+      summary: Spills recording to the next media device in the spill order or to the active media if spill order is empty.
+      responses:
+        204:
+          description: Spilled recording to the next media device.
+  /transports/0/inputVideoFormat:
+    get:
+      tags:
+      - Input
+      summary: Gets the video format of the input video signal.
+      responses:
+        200:
+          description: The video format of the input video signal. "inputVideoFormat" is null when there is no timeline.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetInputVideoFormat'
+  /transports/0/supportedInputVideoSources:
+    get:
+      tags:
+      - Input
+      summary: Gets the currently supported input video signal sources.
+      responses:
+        200:
+          description: The supported input video signal sources.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportedInputVideoSources'
+  /transports/0/inputVideoSource:
+    get:
+      tags:
+      - Input
+      summary: Gets the source of the input video signal.
+      responses:
+        200:
+          description: The input video signal source.  The source will be one in the list from GET /transports/0/supportedInputVideoSources.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetInputVideoSource'
+    put:
+      tags:
+      - Input
+      summary: Sets the source of the input video signal.
+      requestBody:
+        description: Set the input video signal to a source from the list given by GET /transports/0/supportedInputVideoSources.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetInputVideoSource'
+      responses:
+        204:
+          description: The source of the input video signal was set successfully.
+        400:
+          description: The source specified was invalid or unsupported.
+  /transports/0/clip:
+    get:
+      summary: Get clip information about the currently recording, transferring or playing clip, if it exists
+      tags:
+      - Transport
+      responses:
+        200:
+          description: Information about the clip currently being recorded, transferred or played.
+          content:
+            application/json:
+              schema:
+                properties:
+                  clip:
+                    nullable: true
+                    description: Media clip currently being recorded, transferred or played, or null if none exists.
+                    required:
+                    - filePath
+                    allOf:
+                    - $ref: '#/components/schemas/DiskClip'
+  /transports/0/record/filenameConfiguration:
+    get:
+      summary: Gets filename configuration for future recordings.
+      tags:
+      - Transport
+      responses:
+        200:
+          description: The filename configuration used to create the clip filename for the next recording.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FilenameConfiguration'
+    put:
+      summary: Set filename configuration for future recordings.
+      tags:
+      - Transport
+      requestBody:
+        description: The filename configuration to use to create the clip filename for the next recording.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FilenameConfiguration'
+      responses:
+        200:
+          description: Filename configuration for future recordings applied successfully.
+        400:
+          description: Provided filename configuration was invalid.
+  /transports/0/record/trigger:
+    get:
+      summary: Gets trigger record configuration.
+      tags:
+      - Transport
+      responses:
+        200:
+          description: Current trigger recording configuration.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TriggerRecord'
+    put:
+      summary: Sets trigger record configuration.
+      tags:
+      - Transport
+      requestBody:
+        description: Sets the trigger record configuration. Note that changing this configuration may have the side effect of starting or stopping a recording, depending on the input signal.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TriggerRecord'
+      responses:
+        200:
+          description: Trigger recording configuration applied successfully.
+  /timelines/0/playRange:
+    get:
+      tags:
+      - Play Range
+      summary: Gets the current timeline play range.  playRange is null if playing the whole timeline, or there is no play range.
+      responses:
+        200:
+          description: The current timeline play range.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetPlayRange'
+    put:
+      tags:
+      - Play Range
+      summary: Update the timeline play range.
+      requestBody:
+        description: 'Update the play range. In video codecs with sync frames (H.264/H.265), play range will align to nearest sync frame.
+
+          '
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Set the timeline play range.
+              required:
+              - playRange
+              properties:
+                playRange:
+                  nullable: true
+                  description: Timeline play range. The play range spans frames timelineIn to timelineOut - 1. If null, clears the play range and plays the whole timeline.
+                  allOf:
+                  - $ref: '#/components/schemas/TimelinePlayRange'
+      responses:
+        204:
+          description: The timeline play range was updated successfully.
+  /timelines/0/playRange/clear:
+    post:
+      tags:
+      - Play Range
+      summary: Clears the timeline play range, sets the play range to be the whole timeline.
+      responses:
+        204:
+          description: The timeline play range was cleared successfully.
+  /timelines/0/videoFormat:
+    get:
+      tags:
+      - Timeline
+      summary: Gets the video format of the timeline.
+      responses:
+        200:
+          description: The video format of the timeline. "videoFormat" is null when there is no timeline.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetTimelineVideoFormat'
+    put:
+      tags:
+      - Timeline
+      summary: Sets the video format of the timeline.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - $ref: '#/components/schemas/PutTimelineVideoFormatName'
+              - $ref: '#/components/schemas/PutTimelineVideoFormatDetailed'
+      responses:
+        204:
+          description: The timeline video format was set successfully.
+        400:
+          description: The requested video format was invalid.
+        409:
+          description: The video format cannot be changed at this time.
+  /timelines/0/defaultVideoFormat:
+    get:
+      tags:
+      - Timeline
+      summary: Gets the default video format (default standard) of the timeline.
+      responses:
+        200:
+          description: The default video format of the timeline.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetTimelineVideoFormat'
+    put:
+      tags:
+      - Timeline
+      summary: Sets the default video format (default standard) of the timeline.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - $ref: '#/components/schemas/PutTimelineVideoFormatName'
+              - $ref: '#/components/schemas/PutTimelineVideoFormatDetailed'
+      responses:
+        204:
+          description: The default video format was set successfully.
+        400:
+          description: The requested default video format is invalid or unsupported.
+  /timelines/0/rebuild:
+    post:
+      tags:
+      - Timeline
+      summary: Rebuilds the timeline with default rules according to the default standard.
+      responses:
+        204:
+          description: The timeline was rebuilt with the default standard.
+  /clips/devices/{deviceName}:
+    get:
+      summary: Get the list of clips on the specified media device.
+      parameters:
+      - $ref: '#/components/parameters/DeviceNameParameter'
+      tags:
+      - Clips
+      responses:
+        200:
+          description: List of clips on the specified media device.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Clips'
+        400:
+          description: Device not found.
+        500:
+          description: Failed to get clip info.
+  /media/external:
+    get:
+      tags:
+      - External Media
+      summary: Gets the list of present external media devices. Media devices here can be used in all other endpoints that accept the "deviceName" parameter.
+      responses:
+        200:
+          description: The list of present external media devices.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetExternalMediaDevices'
+  /media/external/selected:
+    get:
+      tags:
+      - External Media
+      summary: Gets the current selected external media device.
+      responses:
+        200:
+          description: The selected external media device.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSelectedExternalMediaDevice'
+        404:
+          description: No selected external media has been selected.
+    put:
+      tags:
+      - External Media
+      summary: Sets the current selected external media device.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetSelectedExternalMediaDevice'
+      responses:
+        204:
+          description: The selected external media device was set successfully.
+  /media/nas/discovered:
+    get:
+      tags:
+      - NAS
+      summary: Gets the NAS hosts discoverable by the device.
+      responses:
+        200:
+          description: The list of discovered NAS hosts.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetDiscoveredNASHosts'
+  /media/nas/bookmarks:
+    get:
+      tags:
+      - NAS
+      summary: Gets all NAS share bookmarks.
+      responses:
+        200:
+          description: The list of NAS share bookmarks.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetNASBookmarks'
+    post:
+      tags:
+      - NAS
+      summary: Add a new NAS share bookmark.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddNASBookmark'
+      responses:
+        204:
+          description: The NAS bookmark was added successfully.
+        400:
+          description: The NAS bookmark could not be added.
+  /media/nas/bookmarks/{url}:
+    get:
+      tags:
+      - NAS
+      summary: Get information about a requested network share bookmark.
+      parameters:
+      - $ref: '#/components/parameters/URLParameter'
+      responses:
+        200:
+          description: Information about the requested network share bookmark.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NASBookmark'
+        404:
+          description: Network share bookmark not found.
+    put:
+      tags:
+      - NAS
+      summary: Adds a bookmark with the requested URL.
+      parameters:
+      - $ref: '#/components/parameters/URLParameter'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetNASBookmark'
+      responses:
+        204:
+          description: The NAS bookmark has been created.
+        400:
+          description: The NAS bookmark could not be created.
+    delete:
+      tags:
+      - NAS
+      summary: Deletes a bookmark with the requested URL.
+      parameters:
+      - in: path
+        name: url
+        schema:
+          type: string
+        required: true
+        description: URL of the network share to be deleted. Slashes in url should be encoded as %2F
+      responses:
+        204:
+          description: The NAS bookmark has been deleted.
+  /media/nas/selected:
+    get:
+      tags:
+      - NAS
+      summary: Gets the currently selected share bookmark.
+      responses:
+        200:
+          description: Information about the selected network share bookmark.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SelectedNASShare'
+    put:
+      tags:
+      - NAS
+      summary: Sets the selected share bookmark to the requested bookmark, or clears the bookmark.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetSelectedNASShare'
+      responses:
+        204:
+          description: The selected NAS bookmark was set or cleared.
+        400:
+          description: The specified NAS bookmark is invalid.
+        409:
+          description: The selected NAS bookmark cannot not be set or cleared in this state.
+  /monitoring/zebra:
+    get:
+      tags:
+      - Monitoring
+      summary: Gets the current zebra level.
+      responses:
+        200:
+          description: Returns the current zebra level.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetZebraLevel'
+    put:
+      tags:
+      - Monitoring
+      summary: Set the zebra level.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetZebraLevel'
+      responses:
+        204:
+          description: Zebra level updated successfully.
+        400:
+          description: Invalid request or zebra level.
+        500:
+          description: Unable to update the zebra level.
+  /monitoring/supportedZebraLevels:
+    get:
+      tags:
+      - Monitoring
+      summary: Gets the supported zebra levels.
+      responses:
+        200:
+          description: Returns a list of supported zebra levels.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  levels:
+                    type: array
+                    items:
+                      type: integer
+                      description: A valid zebra level.
+                    example:
+                    - 40
+                    - 75
+                    - 100
+  /monitoring/scopes:
+    get:
+      tags:
+      - Monitoring
+      summary: Gets scopes configuration applied to all displays.
+      responses:
+        200:
+          description: The current scopes configuration.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetScopes'
+        400:
+          description: Scopes is not supported by this device.
+    put:
+      tags:
+      - Monitoring
+      summary: Sets scopes configuration for all displays.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetScopes'
+      responses:
+        204:
+          description: Scopes configuration updated successfully.
+        400:
+          description: Invalid scopes configuration requested. Or, scopes is not supported by this device.
+        500:
+          description: Unable to update the scopes configuration.
+  /monitoring/{displayName}/scopes:
+    get:
+      summary: Get the scopes enable state for a specific display.
+      tags:
+      - Monitoring
+      parameters:
+      - $ref: '#/components/parameters/displayName'
+      responses:
+        200:
+          description: Returns the scopes enable state.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnableState'
+        400:
+          description: Scopes is not supported by this device.
+        404:
+          description: Display not found.
+    put:
+      summary: Set the scopes enable state for a specific display.
+      tags:
+      - Monitoring
+      parameters:
+      - $ref: '#/components/parameters/displayName'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnableState'
+      responses:
+        204:
+          description: Scopes state updated successfully.
+        400:
+          description: Scopes is not supported by this device.
+        422:
+          description: Unable to update the scopes state.
+  /audio/supportedRecordFormats:
+    get:
+      tags:
+      - Audio
+      summary: Gets supported record audio formats according to the current device configuration.
+      responses:
+        200:
+          description: Supported record audio formats.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportedRecordFormats'
+  /audio/recordFormat:
+    get:
+      tags:
+      - Audio
+      summary: Gets configured record audio format.
+      responses:
+        200:
+          description: The configured record audio format.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordAudioFormat'
+    put:
+      tags:
+      - Audio
+      summary: Sets configured record audio format.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecordAudioFormat'
+      responses:
+        204:
+          description: Record audio format set successfully.
+        400:
+          description: Requested record audio format was invalid.
+        409:
+          description: Failed to set requested record audio format.
+tags:
+- name: Media
+  description: Media Control API
+- name: Transport
+  description: Transport Control API
+- name: Clips
+  description: Clips Control API
+- name: System
+  description: System Control API
+- name: Monitoring
+  description: Controls for monitoring features on displays.
+- name: Timeline
+  description: Timeline Control API
+- name: Event
+  description: Event Control API
+- name: Input
+  description: Input Control API
+- name: Spill
+  description: Spill Control API
+- name: Record Cache
+  description: Record Cache Control API
+- name: Play Range
+  description: Play Range Control API
+- name: External Media
+  description: External Media Control API
+- name: NAS
+  description: NAS Control API
+- name: Audio
+  description: Audio Control API
+components:
+  schemas:
+    Workingset:
+      type: object
+      properties:
+        size:
+          type: integer
+          description: The fixed size of this device's working set.
+          example: 1
+        workingset:
+          type: array
+          description: The device's working set.
+          items:
+            nullable: true
+            type: object
+            description: Device within the working set. null if no device is present within the given working set slot.
+            allOf:
+            - $ref: '#/components/schemas/MediaDevice'
+    MediaDevice:
+      type: object
+      description: Media device.
+      required:
+      - deviceName
+      properties:
+        volume:
+          type: string
+          description: Volume name.
+          example: My disk
+        deviceName:
+          type: string
+          description: Internal device name of this media device.
+          example: sd1
+        remainingRecordTime:
+          type: integer
+          description: Remaining record time using current codec and video format in seconds.
+          example: 5124087
+        totalSpace:
+          type: integer
+          description: Total space on media device in bytes.
+          example: 9817071702016
+        remainingSpace:
+          type: integer
+          description: Remaining space on media device in bytes.
+          example: 7817071702016
+        clipCount:
+          type: integer
+          description: Number of clips currently on the device.
+          example: 12
+    ActiveMedia:
+      type: object
+      description: The active media device, or null if there is no active media.
+      nullable: true
+      properties:
+        workingsetIndex:
+          type: integer
+          description: Working set index of the active media device.
+          example: 0
+        deviceName:
+          type: string
+          description: Device name of media device.
+          example: sd1
+    DoFormatSupportedFilesystems:
+      description: List of filesystems permitted for formatting media.
+      type: array
+      example:
+      - ExFAT
+      - HFS
+      items:
+        description: Filesystem serialised as string.
+        example: ExFAT
+        type: string
+    MediaDeviceInformation:
+      type: object
+      description: Media device state.
+      properties:
+        state:
+          type: string
+          example: Mounted
+          enum:
+          - None
+          - Scanning
+          - Mounted
+          - Uninitialised
+          - Formatting
+          - RaidComponent
+          description: The current state of the media device.
+    TransportResponse:
+      type: object
+      properties:
+        mode:
+          example: InputPreview
+          type: string
+          description: Transport mode.
+          enum:
+          - InputPreview
+          - InputRecord
+          - Output
+    Playback:
+      type: object
+      properties:
+        type:
+          example: Play
+          type: string
+          enum:
+          - Play
+          - Jog
+          - Shuttle
+          - Var
+        loop:
+          example: false
+          type: boolean
+          description: When true, playback loops from the end of the timeline to the beginning of the timeline.
+        singleClip:
+          example: false
+          type: boolean
+          description: When true, playback loops from the end of the current clip to the beginning of the current clip.
+        speed:
+          example: 1.0
+          type: number
+          description: Playback speed, 1.0 for normal forward playback.
+        position:
+          example: 0
+          type: integer
+          description: Playback position on the timeline in units of video frames, where 0 is the first frame of the timeline.
+    GetRecord:
+      type: object
+      properties:
+        recording:
+          type: boolean
+          example: true
+          description: If true, transport is in InputRecord mode.
+    PutRecord:
+      type: object
+      required:
+      - recording
+      properties:
+        recording:
+          type: boolean
+          description: If true, starts a recording, otherwise stops.
+        clipName:
+          type: string
+          example: ClipName.mov
+          description: Optional, sets the requested clip name to record to, when "recording" attribute is set to true.
+    Record:
+      type: object
+      properties:
+        clipName:
+          type: string
+          example: ClipName.mov
+          description: Optional, provides a specific name of clip to record to.
+    ClipIndex:
+      type: object
+      properties:
+        clipIndex:
+          nullable: true
+          type: number
+          description: The 0-based index of the clip being played on the timeline. null when there is no timeline or an empty timeline.
+    Timecode:
+      type: object
+      properties:
+        display:
+          type: string
+          description: The display timecode serialised as a string.
+          example: 00:00:03:22
+        timeline:
+          type: string
+          description: The timeline timecode serialised as a string.
+          example: 00:00:03:22
+    TimecodeSource:
+      type: object
+      properties:
+        timecode:
+          type: string
+          enum:
+          - Timeline
+          - Clip
+    Clips:
+      type: object
+      description: List of media clips.
+      required:
+      - clips
+      properties:
+        clips:
+          type: array
+          items:
+            required:
+            - clipUniqueId
+            allOf:
+            - $ref: '#/components/schemas/DiskClip'
+    DiskClip:
+      type: object
+      description: Media clip.
+      properties:
+        clipUniqueId:
+          type: integer
+          description: Unique ID used to identify this clip.
+          example: 2
+        filePath:
+          type: string
+          description: Path to the file relative to the root of a mount.
+          example: Movie_0001.mp4
+        fileSize:
+          type: integer
+          description: Size of file on disk in bytes.
+          example: 182003000
+        codecFormat:
+          $ref: '#/components/schemas/CodecFormat'
+        videoFormat:
+          $ref: '#/components/schemas/VideoFormat'
+        startTimecode:
+          type: string
+          description: Start timecode of the clip serialised as string.
+          example: 00:00:03:22
+        durationTimecode:
+          type: string
+          example: 00:05:03:22
+          description: Duration of the clip in timecode format serialised as string.
+        frameCount:
+          type: integer
+          example: 9120
+          description: Number of frames in clip; duration of the clip in frames.
+    CodecFormat:
+      type: object
+      properties:
+        codec:
+          type: string
+          description: Codec format serialised as a string.
+          example: ProRes:HQ
+        container:
+          type: string
+          description: Multimedia container format.
+          example: MOV
+      description: Codec format configuration.
+    FrameRate:
+      type: string
+      description: Frame rate.
+      example: '29.97'
+      enum:
+      - '23.98'
+      - '24.00'
+      - '24'
+      - '25.00'
+      - '25'
+      - '29.97'
+      - '30.00'
+      - '30'
+      - '47.95'
+      - '48.00'
+      - '48'
+      - '50.00'
+      - '50'
+      - '59.94'
+      - '60.00'
+      - '60'
+      - '119.88'
+      - '120.00'
+      - '120'
+    VideoFormat:
+      type: object
+      description: Video format configuration.
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          description: Video format serialised as a string.
+          example: 1920x1080p29.97
+        frameRate:
+          $ref: '#/components/schemas/FrameRate'
+        height:
+          type: number
+          description: Height dimension of video format.
+          example: 1080
+        width:
+          type: number
+          description: Width dimension of video format.
+          example: 1920
+        interlaced:
+          type: boolean
+          description: Is the display format interlaced?
+          example: false
+    SystemResponse:
+      type: object
+      description: The properties will be populated only with the values that are supported/implemented by the device in use.
+      properties:
+        codecFormat:
+          $ref: '#/components/schemas/CodecFormat'
+        videoFormat:
+          $ref: '#/components/schemas/GetVideoFormat'
+    ProductInfo:
+      type: object
+      description: Product information.
+      properties:
+        deviceName:
+          type: string
+          description: Name of device as displayed in Setup.
+          example: My Blackmagic Device
+        productName:
+          type: string
+          description: Device's product name.
+          example: Blackmagic Device
+        softwareVersion:
+          type: string
+          description: Software version running on device.
+          example: '1.0'
+    SupportedCodecFormats:
+      type: object
+      properties:
+        codecs:
+          type: array
+          items:
+            $ref: '#/components/schemas/CodecFormat'
+    SupportedVideoFormats:
+      type: object
+      description: List of supported video formats.
+      properties:
+        formats:
+          type: array
+          description: List of video formats.
+          items:
+            $ref: '#/components/schemas/GetVideoFormat'
+    GetVideoFormat:
+      type: object
+      description: Video format configuration.
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          description: Video format serialised as a string.
+          example: 1920x1080p29.97
+        frameRate:
+          $ref: '#/components/schemas/FrameRate'
+        height:
+          type: number
+          description: Height dimension of video format.
+          example: 1080
+        width:
+          type: number
+          description: Width dimension of video format.
+          example: 1920
+        interlaced:
+          type: boolean
+          description: Is the display format interlaced?
+          example: false
+    PutVideoFormatDetailed:
+      type: object
+      required:
+      - frameRate
+      - height
+      - width
+      properties:
+        frameRate:
+          $ref: '#/components/schemas/FrameRate'
+        height:
+          type: number
+          description: Height dimension of video format.
+          example: 1080
+        width:
+          type: number
+          description: Width dimension of video format.
+          example: 1920
+        interlaced:
+          type: boolean
+          description: Is the display format interlaced?
+          example: false
+    PutVideoFormatName:
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          description: Video format serialised as a string.
+          example: 1920x1080p29.97
+    EnableState:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          description: Indicates if the feature is enabled.
+          example: true
+    FocusAssistState:
+      type: object
+      properties:
+        mode:
+          type: string
+          description: Mode of focus assist, e.g., 'Peak' or 'ColoredLines'.
+          enum:
+          - Peak
+          - ColoredLines
+          example: Peak
+        color:
+          type: string
+          description: Color of the focus assist highlight.
+          enum:
+          - Red
+          - Green
+          - Blue
+          - White
+          - Black
+          example: Red
+        intensity:
+          type: integer
+          description: Intensity of the focus assist highlight (0-100).
+          example: 75
+    RatioState:
+      type: object
+      properties:
+        ratio:
+          type: string
+          description: The frame guide ratio.
+          example: '4:3'
+    FrameGrids:
+      type: object
+      properties:
+        frameGrids:
+          type: array
+          items:
+            type: string
+            enum:
+            - Thirds
+            - Crosshair
+            - Dot
+            - Horizon
+          description: List of frame grids enabled.
+          example:
+          - Thirds
+          - Crosshair
+    Timeline:
+      type: object
+      properties:
+        clips:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimelineClip'
+    TimelineClip:
+      type: object
+      description: Timeline clip.
+      required:
+      - clipUniqueId
+      properties:
+        clipUniqueId:
+          type: integer
+          description: Unique identifier used to identify this media clip. If the same media clip is added to the timeline multiple times, each timeline clip has the same clipUniqueId
+          example: 1
+        frameCount:
+          type: integer
+          description: Duration of timeline clip in frames, the number of frames in this clip on the timeline.
+          example: 90000
+        durationTimecode:
+          type: string
+          example: 00:05:03:22
+          description: Duration of the timeline clip in timecode format serialised as string. This will differ to durationTimecode reported in /clips for this clipUniqueId if clipIn or frameCount was specified when adding this clip to the timeline.
+        clipIn:
+          type: string
+          description: In frame offset for the clip on the timeline, where 0 is the first frame of the on-disk clip.
+          example: 20
+        inTimecode:
+          type: string
+          description: Clip timecode of the first frame of this timeline clip serialised as string (clip startTimecode + clipIn frames).
+          example: 00:00:03:22
+        timelineIn:
+          type: string
+          description: Timeline position of the first frame of this clip, where 0 is the first frame of the timeline.
+          example: 10
+        timelineInTimecode:
+          type: string
+          description: Timeline timecode of the first frame of this timeline clip serialised as string.
+          example: 00:00:00:10
+    AddClipToTimeline:
+      oneOf:
+      - type: object
+        description: Add multiple media clips to the timeline with optional insertion point and clip in/out points.
+        required:
+        - clips
+        properties:
+          insertBefore:
+            $ref: '#/components/schemas/ClipInsertBefore'
+          clips:
+            description: List of clips to add to the timeline.
+            type: array
+            items:
+              $ref: '#/components/schemas/ClipWithOptionalInOutPoints'
+      - type: object
+        description: Add multiple media clips to the timeline with optional insertion point.
+        required:
+        - clips
+        properties:
+          insertBefore:
+            $ref: '#/components/schemas/ClipInsertBefore'
+          clips:
+            description: List of clips to add to the timeline.
+            type: array
+            items:
+              $ref: '#/components/schemas/ClipUniqueIdInteger'
+      - type: object
+        description: Add a single clip to the timeline with optional insertion point and clip in/out points.
+        required:
+        - clips
+        properties:
+          insertBefore:
+            $ref: '#/components/schemas/ClipInsertBefore'
+          clips:
+            $ref: '#/components/schemas/ClipWithOptionalInOutPoints'
+      - type: object
+        description: Add a single clip to the timeline with optional insertion point.
+        required:
+        - clips
+        properties:
+          insertBefore:
+            $ref: '#/components/schemas/ClipInsertBefore'
+          clips:
+            $ref: '#/components/schemas/ClipUniqueIdInteger'
+    ClipInsertBefore:
+      description: 'Clip(s) will be inserted before the clip at this timeline clip index, where 0 inserts to the beginning of the timeline. If omitted, inserts to the end of the timeline.
+
+        '
+      type: integer
+      example: 0
+    ClipUniqueIdInteger:
+      type: integer
+      description: Unique ID (clipUniqueId) of the media clip to add to the timeline.
+      example: 1
+    ClipWithOptionalInOutPoints:
+      type: object
+      required:
+      - clipUniqueId
+      description: Clip to add to the timeline, optionally cropping the clip before adding to the timeline.
+      properties:
+        clipUniqueId:
+          $ref: '#/components/schemas/ClipUniqueIdInteger'
+        clipIn:
+          type: integer
+          description: Insert this clip starting from this frame within the media clip. If omitted, starts from the beginning of the clip -- frame 0.
+          example: 40
+        frameCount:
+          type: integer
+          description: Number of frames of this clip to add to the timeline. If omitted, use the whole clip, or the rest of the clip if clipIn was specified.
+          example: 40
+    AddClipsToEndOfTimelineDeprecated:
+      oneOf:
+      - type: object
+        description: Add one clip to the end of the timeline.
+        properties:
+          clips:
+            $ref: '#/components/schemas/ClipUniqueIdInteger'
+      - type: object
+        description: Add many clips to the end of the timeline.
+        properties:
+          clips:
+            type: array
+            description: List of clipUniqueIds of clips to add to end of timeline.
+            items:
+              $ref: '#/components/schemas/ClipUniqueIdInteger'
+            example:
+            - 1
+            - 2
+            - 3
+            - 1
+    eventsList:
+      type: object
+      properties:
+        events:
+          type: array
+          description: List of events that can be subscribed to using the websocket API.
+          items:
+            type: string
+    Uptime:
+      type: object
+      description: System uptime information.
+      properties:
+        uptimeSeconds:
+          type: integer
+          description: The system uptime in seconds.
+          example: 242
+    FilenameConfiguration:
+      type: object
+      description: Configuration for filenames used in future recordings.
+      properties:
+        filenamePrefix:
+          type: string
+          description: Filename prefix for future recordings. Characters not permitted in HFS+ and exFAT filenames are disallowed.
+          example: HyperDeck
+          minLength: 1
+          maxLength: 127
+        appendTimestamp:
+          type: boolean
+          description: If enabled, appends timestamp of format _YYMMDDHHMM after the filename prefix in future recordings.
+          example: false
+    TriggerRecord:
+      type: object
+      description: Record trigger configuration.
+      properties:
+        recordTrigger:
+          type: string
+          description: When to automatically start recording.
+          example: None
+          enum:
+          - None
+          - VideoStartStop
+          - TimecodeRun
+    RecordCache:
+      type: object
+      description: Recording cache information.
+      required:
+      - status
+      properties:
+        status:
+          type: string
+          description: The current status of the cache. "none" means no cache is detected by the device.
+          example: idle
+          enum:
+          - undetected
+          - unformatted
+          - idle
+          - transferring
+          - queued
+          - recording
+          - disabled
+        remainingRecordingTime:
+          type: integer
+          description: The remaining recording time in seconds.
+          example: 42200
+        transferringDevice:
+          type: string
+          description: The device name of the disk the cache is currently transferring to.
+          example: ssd1
+    GetSpillOrder:
+      type: object
+      properties:
+        devices:
+          type: array
+          description: Media devices in spill order.
+          items:
+            $ref: '#/components/schemas/ShortMediaDevice'
+    RecordCacheEnabled:
+      type: object
+      required:
+      - enabled
+      properties:
+        enabled:
+          type: boolean
+          description: Is the record cache enabled?
+          example: true
+    SetRecordCacheEnabled:
+      type: object
+      required:
+      - enabled
+      properties:
+        enabled:
+          type: boolean
+          description: Is the record cache enabled?
+          example: true
+    SetIdentify:
+      type: object
+      required:
+      - enabled
+      properties:
+        enabled:
+          type: boolean
+          description: Is the device identifying itself?
+          example: true
+    GetExternalMediaDevices:
+      type: object
+      required:
+      - devices
+      properties:
+        devices:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalMediaDevice'
+    ExternalMediaDevice:
+      $ref: '#/components/schemas/MediaDevice'
+    DeviceName:
+      type: string
+      description: Device name of the media device.
+      example: sd1
+    GetSelectedExternalMediaDevice:
+      type: object
+      required:
+      - selected
+      properties:
+        selected:
+          description: The currently selected external media device. If null, no external media device is selected.
+          type: object
+          nullable: true
+          properties:
+            deviceName:
+              $ref: '#/components/schemas/DeviceName'
+    SetSelectedExternalMediaDevice:
+      type: object
+      required:
+      - selected
+      properties:
+        selected:
+          type: object
+          description: Media device to make the selected external media device.
+          properties:
+            deviceName:
+              $ref: '#/components/schemas/DeviceName'
+    SupportedInputVideoSources:
+      type: object
+      required:
+      - supportedInputVideoSources
+      properties:
+        supportedInputVideoSources:
+          type: array
+          items:
+            $ref: '#/components/schemas/InputVideoSource'
+    GetInputVideoSource:
+      type: object
+      required:
+      - inputVideoSource
+      properties:
+        inputVideoSource:
+          $ref: '#/components/schemas/InputVideoSource'
+    SetInputVideoSource:
+      type: object
+      required:
+      - inputVideoSource
+      properties:
+        inputVideoSource:
+          description: Source of video input. Use GET /transports/0/supportedInputVideoSources to obtain currently supported options.
+          allOf:
+          - $ref: '#/components/schemas/InputVideoSource'
+    InputVideoSource:
+      type: string
+      description: Source of video input.
+      example: SDI
+      enum:
+      - SDI
+      - 4xSDI
+      - HDMI
+      - Component
+      - Composite
+    GetSystemVideoFormat:
+      nullable: true
+      description: Current system video format, or null for no input video signal or no timeline.
+      allOf:
+      - $ref: '#/components/schemas/VideoFormat'
+    GetInputVideoFormat:
+      type: object
+      required:
+      - inputVideoFormat
+      properties:
+        inputVideoFormat:
+          nullable: true
+          description: Video format, or null for no input video signal.
+          allOf:
+          - $ref: '#/components/schemas/VideoFormat'
+    GetTimelineVideoFormat:
+      type: object
+      required:
+      - videoFormat
+      properties:
+        videoFormat:
+          nullable: true
+          description: Video format, or null for no timeline.
+          allOf:
+          - $ref: '#/components/schemas/VideoFormat'
+    GetPlayRange:
+      type: object
+      required:
+      - playRange
+      properties:
+        playRange:
+          nullable: true
+          description: Timeline play range. The play range spans frames timelineIn to timelineOut - 1. null if playing the whole timeline or if there is no play range.
+          allOf:
+          - $ref: '#/components/schemas/TimelinePlayRange'
+    TimelinePlayRange:
+      type: object
+      description: Timeline play range. The play range spans frames timelineIn to timelineOut - 1.
+      properties:
+        timelineIn:
+          type: integer
+          description: 0-based timeline frame number of the start of the play range. If omitted, the play range starts from the start of the timeline.
+          example: 10
+        timelineOut:
+          type: integer
+          description: 0-based timeline frame number of the end of the play range. If omitted, the play range ends at the end of the timeline.
+          example: 20
+    GetDiscoveredNASHosts:
+      type: object
+      required:
+      - hosts
+      properties:
+        hosts:
+          type: array
+          items:
+            $ref: '#/components/schemas/DiscoveredNASHost'
+    DiscoveredNASHost:
+      type: object
+      description: NAS host.
+      properties:
+        hostName:
+          description: The hostname of the NAS host.
+          type: string
+          example: Blackmagic-Cloud-Store.local
+        friendlyName:
+          description: The friendly name of the NAS host.
+          type: string
+          example: Cloudstore
+        ip:
+          description: The IP address of the NAS host.
+          type: string
+          example: 192.168.0.24
+    GetNASBookmarks:
+      type: object
+      required:
+      - bookmarks
+      properties:
+        bookmarks:
+          type: array
+          items:
+            $ref: '#/components/schemas/NASBookmark'
+    Url:
+      type: string
+      description: URL of the NAS share.
+      example: smb://Blackmagic-Cloud-Store.local/Share/folder
+    NASBookmark:
+      required:
+      - url
+      type: object
+      description: NAS bookmark.
+      properties:
+        url:
+          $ref: '#/components/schemas/Url'
+    AddNASBookmark:
+      required:
+      - url
+      type: object
+      properties:
+        url:
+          $ref: '#/components/schemas/Url'
+        username:
+          type: string
+          description: Optional username of NAS share.
+          default: guest
+          example: guest
+        password:
+          description: Optional password of NAS share.
+          type: string
+          default: ''
+          example: ''
+    SetNASBookmark:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Optional username of NAS share.
+          default: guest
+          example: guest
+        password:
+          description: Optional password of NAS share.
+          type: string
+          default: ''
+          example: ''
+    SelectedNASShare:
+      type: object
+      required:
+      - selected
+      properties:
+        selected:
+          description: Selected NAS share, null if no share selected.
+          type: object
+          nullable: true
+          properties:
+            url:
+              $ref: '#/components/schemas/Url'
+    SetSelectedNASShare:
+      type: object
+      required:
+      - selected
+      properties:
+        selected:
+          description: NAS share to select, use null to clear selected NAS share.
+          type: object
+          nullable: true
+          properties:
+            url:
+              $ref: '#/components/schemas/Url'
+    PutTimelineVideoFormatDetailed:
+      $ref: '#/components/schemas/PutVideoFormatDetailed'
+    PutTimelineVideoFormatName:
+      $ref: '#/components/schemas/PutVideoFormatName'
+    ShortMediaDevice:
+      type: object
+      properties:
+        deviceName:
+          $ref: '#/components/schemas/DeviceName'
+    GetZebraLevel:
+      type: object
+      required:
+      - highlight
+      properties:
+        highlight:
+          type: object
+          required:
+          - level
+          properties:
+            level:
+              type: integer
+              description: Zebra level.
+              example: 50
+    ScopeMode:
+      type: string
+      description: Scope mode.
+      example: Video
+      enum:
+      - Video
+      - Waveform
+      - Parade
+      - Vector
+      - Histogram
+    GetScopes:
+      description: Scopes configuration applied to all displays.
+      type: object
+      required:
+      - mode
+      properties:
+        mode:
+          $ref: '#/components/schemas/ScopeMode'
+    SetScopes:
+      description: Scopes configuration to apply to all displays.
+      type: object
+      required:
+      - mode
+      properties:
+        mode:
+          $ref: '#/components/schemas/ScopeMode'
+    RecordAudioFormat:
+      type: object
+      description: Record audio format.
+      required:
+      - codec
+      - numChannels
+      properties:
+        codec:
+          type: string
+          enum:
+          - PCM
+          - AAC
+          description: Audio codec.
+          example: PCM
+        numChannels:
+          type: integer
+          description: Number of audio channels.
+          enum:
+          - 2
+          - 4
+          - 8
+          - 16
+          - 32
+          - 64
+          example: 16
+    SupportedRecordFormats:
+      type: object
+      description: Supported record audio formats.
+      properties:
+        supportedRecordFormats:
+          description: Supported record audio formats.
+          type: array
+          items:
+            type: object
+            description: Supported record audio format
+            required:
+            - format
+            - available
+            properties:
+              format:
+                $ref: '#/components/schemas/RecordAudioFormat'
+              available:
+                type: boolean
+                description: Indicates whether this record audio format is compatible with current recording configuration and video format
+                example: true
+  parameters:
+    DeviceNameParameter:
+      in: path
+      name: deviceName
+      schema:
+        type: string
+        example: sd1
+      required: true
+      description: Device name of the media device. Retrieved by "deviceName" member of GET /media/workingset or GET /media/active.
+    displayName:
+      in: path
+      name: displayName
+      required: true
+      description: Name of the display. Obtainable from /monitoring/display which returns a list of displayNames.
+      schema:
+        type: string
+    URLParameter:
+      in: path
+      name: url
+      schema:
+        type: string
+      required: true
+      description: URL of network share, as returned by GET /media/nas/bookmarks. Slashes in url should be encoded as %2F
+      example: smb:%2F%2FBlackmagic-Cloud-Store.local%2FShare%2Ffolder
