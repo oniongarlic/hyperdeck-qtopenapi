@@ -19,6 +19,8 @@
 #include "timelineapi.h"
 #include "transportapi.h"
 
+#include "hyperdeckapi.h"
+
 struct HyperDeckAPI {
     QtOpenAPI::SystemApi system;
     QtOpenAPI::TransportApi transport;
@@ -48,6 +50,11 @@ struct HyperDeckAPI {
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
+
+    app.setOrganizationName("TalOrg");
+    app.setOrganizationDomain("tal.org");
+    app.setApplicationName("HyperDeckAPITest");
+
     QQmlApplicationEngine engine;
 
     struct HyperDeckAPI api;
@@ -70,6 +77,8 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("transport", &api.transport);
     engine.rootContext()->setContextProperty("event", &api.event);
     engine.rootContext()->setContextProperty("nas", &api.nas);
+
+    qmlRegisterType<HyperdeckApi>("org.tal.hyperdeck", 1, 0, "HyperDeckDevice");
 
     QObject::connect(
         &engine,

@@ -4,11 +4,21 @@ import QtQuick.Window
 import QtQuick.Controls
 import QtQuick.Layouts
 
+import org.tal.hyperdeck
+
 ApplicationWindow {
     width: 800
     height: 480
     visible: true
-    title: qsTr("Hello World")
+    title: qsTr("HyperDeck API Tester")
+
+    HyperDeckDevice {
+        id: hdd
+        Component.onCompleted: {
+            setServer("192.168.0.233", "http");
+            hdd.getTransport().transports0RecordGet()
+        }
+    }
 
     Connections {
         target: system
@@ -81,24 +91,36 @@ ApplicationWindow {
                     console.debug("Uptime")
                     system.systemUptimeGet();
                 }
-            }
-            ToolButton {
-                text: "Record"
-                onClicked: {
-                    transport.transports0RecordPost();
-                }
-            }
-            ToolButton {
-                text: "Stop"
-                onClicked: {
-                    transport.transports0StopPost();
-                }
-            }
+            }            
             ToolButton {
                 text: "Get Stop"
                 onClicked: {
                     transport.transports0StopGet();
                 }
+            }
+        }
+    }
+
+    ColumnLayout {
+        anchors.fill: parent
+        anchors.margins: 16
+        spacing: 16
+        Button {
+            text: "Play"
+            onClicked: {
+                transport.transports0PlayPost();
+            }
+        }
+        Button {
+            text: "Record"
+            onClicked: {
+                transport.transports0RecordPost();
+            }
+        }
+        Button {
+            text: "Stop"
+            onClicked: {
+                transport.transports0StopPost();
             }
         }
     }
