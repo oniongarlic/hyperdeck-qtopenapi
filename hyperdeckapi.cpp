@@ -110,6 +110,7 @@ void HyperdeckApi::onWsTextMessageReceived(QString message)
 
     if (!j.isObject()) {
         qWarning("Not an object ?");
+        emit connectionError();
         return;
     }
 
@@ -122,6 +123,13 @@ void HyperdeckApi::onWsTextMessageReceived(QString message)
     }
 
     if (a.toString()=="subscribe") {
+        auto v=d.value("values").toObject();
+
+        QVariantList tmp=v.value("/timelines/0").toObject().value("clips").toArray().toVariantList();
+
+        qDebug() << tmp;
+
+        m_clip_model.setItems(tmp);
 
     }
 
@@ -136,4 +144,6 @@ void HyperdeckApi::onWsTextMessageReceived(QString message)
 void HyperdeckApi::onWsErrorOccurred(QAbstractSocket::SocketError error)
 {
     qDebug() << "WSE" << error;
+
+    emit connectionError();
 }

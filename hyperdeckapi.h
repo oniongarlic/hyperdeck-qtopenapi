@@ -24,25 +24,27 @@
 #include "timelineapi.h"
 #include "transportapi.h"
 
+#include "clipmodel.h"
+
 class HyperdeckApi : public QObject
 {
     Q_OBJECT
     QML_ELEMENT
 
-    Q_PROPERTY(QtOpenAPI::SystemApi* system READ getSystem FINAL)
-    Q_PROPERTY(QtOpenAPI::TransportApi* transport READ getTransport FINAL)
-    Q_PROPERTY(QtOpenAPI::TimelineApi* timeline READ getTimeline FINAL)
-    Q_PROPERTY(QtOpenAPI::MediaApi* media READ getMedia FINAL)
-    Q_PROPERTY(QtOpenAPI::AudioApi* audio READ getAudio FINAL)
-    Q_PROPERTY(QtOpenAPI::ClipsApi* clips READ getClips FINAL)
-    Q_PROPERTY(QtOpenAPI::EventApi* event READ getEvent FINAL)
-    Q_PROPERTY(QtOpenAPI::ExternalMediaApi* externalmedia READ getExternalMedia FINAL)
-    Q_PROPERTY(QtOpenAPI::InputApi* input READ getInput FINAL)
-    Q_PROPERTY(QtOpenAPI::MonitoringApi* monitoring READ getMonitoring FINAL)
-    Q_PROPERTY(QtOpenAPI::NASApi* nas READ getNas FINAL)
-    Q_PROPERTY(QtOpenAPI::PlayRangeApi* playrange READ getPlayRange FINAL)
-    Q_PROPERTY(QtOpenAPI::RecordCacheApi* recordcache READ getRecordCache FINAL)
-    Q_PROPERTY(QtOpenAPI::SpillApi* spill READ getSpill FINAL)
+    Q_PROPERTY(QtOpenAPI::SystemApi* system READ getSystem FINAL CONSTANT)
+    Q_PROPERTY(QtOpenAPI::TransportApi* transport READ getTransport FINAL CONSTANT)
+    Q_PROPERTY(QtOpenAPI::TimelineApi* timeline READ getTimeline FINAL CONSTANT)
+    Q_PROPERTY(QtOpenAPI::MediaApi* media READ getMedia FINAL CONSTANT)
+    Q_PROPERTY(QtOpenAPI::AudioApi* audio READ getAudio FINAL CONSTANT)
+    Q_PROPERTY(QtOpenAPI::ClipsApi* clips READ getClips FINAL CONSTANT)
+    Q_PROPERTY(QtOpenAPI::EventApi* event READ getEvent FINAL CONSTANT)
+    Q_PROPERTY(QtOpenAPI::ExternalMediaApi* externalmedia READ getExternalMedia FINAL CONSTANT)
+    Q_PROPERTY(QtOpenAPI::InputApi* input READ getInput FINAL CONSTANT)
+    Q_PROPERTY(QtOpenAPI::MonitoringApi* monitoring READ getMonitoring FINAL CONSTANT)
+    Q_PROPERTY(QtOpenAPI::NASApi* nas READ getNas FINAL CONSTANT)
+    Q_PROPERTY(QtOpenAPI::PlayRangeApi* playrange READ getPlayRange FINAL CONSTANT)
+    Q_PROPERTY(QtOpenAPI::RecordCacheApi* recordcache READ getRecordCache FINAL CONSTANT)
+    Q_PROPERTY(QtOpenAPI::SpillApi* spill READ getSpill FINAL CONSTANT)
 
 
 public:
@@ -69,7 +71,10 @@ public:
     Q_INVOKABLE QtOpenAPI::RecordCacheApi* getRecordCache() { return &recordcache; }
     Q_INVOKABLE QtOpenAPI::SpillApi* getSpill() { return &spill; }
 
+    Q_INVOKABLE ClipModel* getClipsModel() { return &m_clip_model; }
+
 signals:
+    void connectionError();
 
 protected:
     QtOpenAPI::SystemApi system;
@@ -97,6 +102,8 @@ private:
     QString m_hostname;
     QString m_protocol;
     QWebSocket m_ws;
+
+    ClipModel m_clip_model;
 };
 
 #endif // HYPERDECKAPI_H

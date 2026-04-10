@@ -3,22 +3,6 @@
 #include <QQmlContext>
 #include <QDebug>
 
-#include "audioapi.h"
-#include "clipsapi.h"
-#include "eventapi.h"
-#include "externalmediaapi.h"
-#include "inputapi.h"
-#include "mediaapi.h"
-#include "monitoringapi.h"
-#include "systemapi.h"
-#include "mediaapi.h"
-#include "nasapi.h"
-#include "playrangeapi.h"
-#include "recordcacheapi.h"
-#include "spillapi.h"
-#include "timelineapi.h"
-#include "transportapi.h"
-
 #include "hyperdeckapi.h"
 
 int main(int argc, char *argv[])
@@ -32,7 +16,8 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
 
     qmlRegisterType<HyperdeckApi>("org.tal.hyperdeck", 1, 0, "HyperDeckDevice");
-//    qmlRegisterType<QtOpenAPI::SystemApi>("org.tal.hyperdeck", 1, 0, "HyperDeckSystem");
+    qmlRegisterUncreatableType<QtOpenAPI::SystemApi>("org.tal.hyperdeck", 1, 0, "HyperDeckSystem", "Nope");
+    qmlRegisterUncreatableType<QtOpenAPI::TransportApi>("org.tal.hyperdeck", 1, 0, "HyperDeckTransport", "Nope");
 
     QObject::connect(
         &engine,

@@ -16,11 +16,8 @@ ApplicationWindow {
         id: hdd
         Component.onCompleted: {
             setServer("192.168.0.233", "http");
-            hdd.open();
-            hdd.getTransport().transports0RecordGet()
-
-
-        }
+            hdd.open();            
+        }                
     }
 
     Connections {
@@ -90,11 +87,17 @@ ApplicationWindow {
                     console.debug("Uptime")
                     hdd.system.systemUptimeGet();
                 }
-            }            
+            }
             ToolButton {
                 text: "Get Stop"
                 onClicked: {
                     hdd.transport.transports0StopGet();
+                }
+            }
+            ToolButton {
+                text: "NAS"
+                onClicked: {
+                    hdd.nas.mediaNasBookmarksGet();
                 }
             }
         }
@@ -122,6 +125,33 @@ ApplicationWindow {
                 hdd.transport.transports0StopPost();
             }
         }
+
+        ColumnLayout {
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            ListView {
+                id: clipsList
+
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+
+                model: hdd.getClipsModel()
+                clip: true
+
+                delegate: ItemDelegate {
+                    required property int clipUniqueId;
+                    required property string durationTimecode;
+                    required property int frameCount;
+                    width: ListView.width
+                    text: clipUniqueId+" - "+durationTimecode+" ("+frameCount+")"
+                }
+
+                onCountChanged: console.debug("model:", count)
+
+                ScrollIndicator.vertical: ScrollIndicator { }
+            }
+        }
+
     }
 
 }
