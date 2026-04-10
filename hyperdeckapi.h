@@ -100,8 +100,12 @@ protected slots:
 
 private:
     QString m_hostname;
-    QString m_protocol;
+    QString m_protocol;    
     QWebSocket m_ws;
+
+    QString m_device;
+    QString m_product;
+    QString m_version;
 
     ClipModel m_clip_model;
 };

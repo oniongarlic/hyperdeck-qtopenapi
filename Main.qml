@@ -143,7 +143,7 @@ ApplicationWindow {
                     required property string durationTimecode;
                     required property int frameCount;
                     width: ListView.width
-                    text: clipUniqueId+" - "+durationTimecode+" ("+frameCount+")"
+                    text: clipUniqueId+" - "+durationTimecode+" ("+frameCount+")"                                    
                 }
 
                 onCountChanged: console.debug("model:", count)

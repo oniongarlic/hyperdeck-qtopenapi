@@ -125,11 +125,22 @@ void HyperdeckApi::onWsTextMessageReceived(QString message)
     if (a.toString()=="subscribe") {
         auto v=d.value("values").toObject();
 
-        QVariantList tmp=v.value("/timelines/0").toObject().value("clips").toArray().toVariantList();
+        if (v.contains("/system/product")) {
+            auto o=v.value("/system/product").toObject();
+            m_device=o.value("deviceName").toString();
+            m_product=o.value("productName").toString();
+            m_version=o.value("softwareVersion").toString();
+        }
 
-        qDebug() << tmp;
+        if (v.contains("/timelines/0")) {
+            QVariantList tmp=v.value("/timelines/0").toObject().value("clips").toArray().toVariantList();
+            m_clip_model.setItems(tmp);
+        }
 
-        m_clip_model.setItems(tmp);
+        if (v.contains("/system/supportedVideoFormats")) {
+            QVariantList tmp=v.value("/system/supportedVideoFormats").toObject().value("videoFormats").toArray().toVariantList();
+            qDebug() << "Video formats" << tmp;
+        }
 
     }
 
