@@ -29,9 +29,21 @@ class HyperdeckApi : public QObject
     Q_OBJECT
     QML_ELEMENT
 
-    Q_PROPERTY(QtOpenAPI::TransportApi* transport READ getTransport FINAL)
     Q_PROPERTY(QtOpenAPI::SystemApi* system READ getSystem FINAL)
-    Q_PROPERTY(QtOpenAPI::ClipsApi* system READ getClips FINAL)
+    Q_PROPERTY(QtOpenAPI::TransportApi* transport READ getTransport FINAL)
+    Q_PROPERTY(QtOpenAPI::TimelineApi* timeline READ getTimeline FINAL)
+    Q_PROPERTY(QtOpenAPI::MediaApi* media READ getMedia FINAL)
+    Q_PROPERTY(QtOpenAPI::AudioApi* audio READ getAudio FINAL)
+    Q_PROPERTY(QtOpenAPI::ClipsApi* clips READ getClips FINAL)
+    Q_PROPERTY(QtOpenAPI::EventApi* event READ getEvent FINAL)
+    Q_PROPERTY(QtOpenAPI::ExternalMediaApi* externalmedia READ getExternalMedia FINAL)
+    Q_PROPERTY(QtOpenAPI::InputApi* input READ getInput FINAL)
+    Q_PROPERTY(QtOpenAPI::MonitoringApi* monitoring READ getMonitoring FINAL)
+    Q_PROPERTY(QtOpenAPI::NASApi* nas READ getNas FINAL)
+    Q_PROPERTY(QtOpenAPI::PlayRangeApi* playrange READ getPlayRange FINAL)
+    Q_PROPERTY(QtOpenAPI::RecordCacheApi* recordcache READ getRecordCache FINAL)
+    Q_PROPERTY(QtOpenAPI::SpillApi* spill READ getSpill FINAL)
+
 
 public:
     explicit HyperdeckApi(QObject *parent = nullptr);
@@ -44,7 +56,18 @@ public:
 
     Q_INVOKABLE QtOpenAPI::TransportApi* getTransport() { return &transport; }
     Q_INVOKABLE QtOpenAPI::SystemApi* getSystem() { return &system; }
+    Q_INVOKABLE QtOpenAPI::TimelineApi* getTimeline() { return &timeline; }
+    Q_INVOKABLE QtOpenAPI::MediaApi* getMedia() { return &media; }
+    Q_INVOKABLE QtOpenAPI::AudioApi* getAudio() { return &audio; }
     Q_INVOKABLE QtOpenAPI::ClipsApi* getClips() { return &clips; }
+    Q_INVOKABLE QtOpenAPI::EventApi* getEvent() { return &event; }
+    Q_INVOKABLE QtOpenAPI::ExternalMediaApi* getExternalMedia() { return &externalmedia; }
+    Q_INVOKABLE QtOpenAPI::InputApi* getInput() { return &input; }
+    Q_INVOKABLE QtOpenAPI::MonitoringApi* getMonitoring() { return &monitoring; }
+    Q_INVOKABLE QtOpenAPI::NASApi* getNas() { return &nas; }
+    Q_INVOKABLE QtOpenAPI::PlayRangeApi* getPlayRange() { return &playrange; }
+    Q_INVOKABLE QtOpenAPI::RecordCacheApi* getRecordCache() { return &recordcache; }
+    Q_INVOKABLE QtOpenAPI::SpillApi* getSpill() { return &spill; }
 
 signals:
 
