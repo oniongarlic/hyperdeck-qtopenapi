@@ -9,7 +9,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Quick OpenApiCommon OpenApiTools)
+find_package(Qt6 REQUIRED COMPONENTS Quick WebSockets OpenApiCommon OpenApiTools)
 
 qt_standard_project_setup(REQUIRES 6.11)
 
@@ -38,7 +38,7 @@ set_target_properties(hyperopenapitest PROPERTIES
     WIN32_EXECUTABLE TRUE
 )
 
-target_link_libraries(hyperopenapitest PRIVATE Qt6::Quick generatedLibrary)
+target_link_libraries(hyperopenapitest PRIVATE Qt6::Quick Qt6::WebSockets generatedLibrary)
 
 install(TARGETS hyperopenapitest
     BUNDLE DESTINATION .

@@ -16,12 +16,15 @@ ApplicationWindow {
         id: hdd
         Component.onCompleted: {
             setServer("192.168.0.233", "http");
+            hdd.open();
             hdd.getTransport().transports0RecordGet()
+
+
         }
     }
 
     Connections {
-        target: system
+        target: hdd.system
 
         function onSystemCodecFormatGetFinished(summary) {
             console.debug(summary)
@@ -47,7 +50,7 @@ ApplicationWindow {
     }
 
     Connections {
-        target: transport
+        target: hdd.transport
 
         function onTransports0RecordPostFinished() {
             console.debug("Recording...")
@@ -66,36 +69,32 @@ ApplicationWindow {
         }
     }
 
-    Connections {
-        target: event
-    }
-
     header: ToolBar {
         RowLayout {
             ToolButton {
                 text: "Codec"
                 onClicked: {
                     console.debug("Codec")
-                    system.systemCodecFormatGet()
+                    hdd.system.systemCodecFormatGet()
                 }
             }
             ToolButton {
                 text: "Codecs"
                 onClicked: {
-                    system.systemSupportedCodecFormatsGet()
+                    hdd.system.systemSupportedCodecFormatsGet()
                 }
             }
             ToolButton {
                 text: "Uptime"
                 onClicked: {
                     console.debug("Uptime")
-                    system.systemUptimeGet();
+                    hdd.system.systemUptimeGet();
                 }
             }            
             ToolButton {
                 text: "Get Stop"
                 onClicked: {
-                    transport.transports0StopGet();
+                    hdd.transport.transports0StopGet();
                 }
             }
         }
@@ -108,19 +107,19 @@ ApplicationWindow {
         Button {
             text: "Play"
             onClicked: {
-                transport.transports0PlayPost();
+                hdd.transport.transports0PlayPost();
             }
         }
         Button {
             text: "Record"
             onClicked: {
-                transport.transports0RecordPost();
+                hdd.transport.transports0RecordPost();
             }
         }
         Button {
             text: "Stop"
             onClicked: {
-                transport.transports0StopPost();
+                hdd.transport.transports0StopPost();
             }
         }
     }

@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QQmlEngine>
 
+#include <QtWebSockets/QtWebSockets>
+
 #include <QDebug>
 
 #include "audioapi.h"
@@ -26,9 +28,27 @@ class HyperdeckApi : public QObject
 {
     Q_OBJECT
     QML_ELEMENT
+
+    Q_PROPERTY(QtOpenAPI::TransportApi* transport READ getTransport FINAL)
+    Q_PROPERTY(QtOpenAPI::SystemApi* system READ getSystem FINAL)
+    Q_PROPERTY(QtOpenAPI::ClipsApi* system READ getClips FINAL)
+
 public:
     explicit HyperdeckApi(QObject *parent = nullptr);
+    ~HyperdeckApi();
 
+    Q_INVOKABLE void setServer(QString hostname, QString protocol);    
+    Q_INVOKABLE void setApiServer(QtOpenApiCommon::QOAIBaseApi *api);
+    Q_INVOKABLE void open();
+    Q_INVOKABLE void close();
+
+    Q_INVOKABLE QtOpenAPI::TransportApi* getTransport() { return &transport; }
+    Q_INVOKABLE QtOpenAPI::SystemApi* getSystem() { return &system; }
+    Q_INVOKABLE QtOpenAPI::ClipsApi* getClips() { return &clips; }
+
+signals:
+
+protected:
     QtOpenAPI::SystemApi system;
     QtOpenAPI::TransportApi transport;
     QtOpenAPI::TimelineApi timeline;
@@ -44,18 +64,16 @@ public:
     QtOpenAPI::RecordCacheApi recordcache;
     QtOpenAPI::SpillApi spill;
 
-    Q_INVOKABLE void setServer(QString hostname, QString protocol);
-
-    Q_INVOKABLE QtOpenAPI::TransportApi* getTransport() { return &transport; }
-
-private:
-    void setApiServer(QtOpenApiCommon::QOAIBaseApi *api);
-
-signals:
+protected slots:
+    void onWsConnected();
+    void onWsDisconnected();
+    void onWsTextMessageReceived(QString message);
+    void onWsErrorOccurred(QAbstractSocket::SocketError error);
 
 private:
     QString m_hostname;
     QString m_protocol;
+    QWebSocket m_ws;
 };
 
 #endif // HYPERDECKAPI_H
