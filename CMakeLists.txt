@@ -21,11 +21,23 @@ qt_add_executable(hyperopenapitest
 qt_add_library(generatedLibrary)
 qt_add_openapi_client(generatedLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/HyperDeckRESTControl.yaml)
 
+qt_add_library(cameraClientLibrary)
+qt_add_openapi_client(cameraClientLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/SystemControl.yaml)
+qt_add_openapi_client(cameraClientLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/EventControl.yaml)
+qt_add_openapi_client(cameraClientLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/AudioControl.yaml)
+qt_add_openapi_client(cameraClientLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/ColorCorrectionControl.yaml)
+qt_add_openapi_client(cameraClientLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/LensControl.yaml)
+qt_add_openapi_client(cameraClientLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/MediaControl.yaml)
+qt_add_openapi_client(cameraClientLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/PresetControl.yaml)
+qt_add_openapi_client(cameraClientLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/TimelineControl.yaml)
+qt_add_openapi_client(cameraClientLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/TransportControl.yaml)
+qt_add_openapi_client(cameraClientLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/VideoControl.yaml)
+
 qt_add_qml_module(hyperopenapitest
     URI oatest
     QML_FILES
-        Main.qml
-        SOURCES clipmodel.h clipmodel.cpp
+    Main.qml
+    SOURCES clipmodel.h clipmodel.cpp
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
