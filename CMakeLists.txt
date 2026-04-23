@@ -18,8 +18,8 @@ qt_add_executable(hyperopenapitest
     main.cpp
 )
 
-qt_add_library(generatedLibrary)
-qt_add_openapi_client(generatedLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/HyperDeckRESTControl.yaml)
+qt_add_library(hyperdeckClientLibrary)
+qt_add_openapi_client(hyperdeckClientLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/HyperDeckRESTControl.yaml)
 
 qt_add_library(cameraClientLibrary)
 qt_add_openapi_client(cameraClientLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/SystemControl.yaml)
