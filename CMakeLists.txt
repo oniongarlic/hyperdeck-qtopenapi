@@ -19,7 +19,7 @@ qt_add_executable(hyperopenapitest
 )
 
 qt_add_library(hyperdeckClientLibrary)
-qt_add_openapi_client(hyperdeckClientLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/HyperDeckRESTControl.yaml)
+qt_add_openapi_client(hyperdeckClientLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/hyperdeck/HyperDeckRESTControl.yaml)
 
 qt_add_library(cameraClientLibrary)
 qt_add_openapi_client(cameraClientLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/SystemControl.yaml)
@@ -51,7 +51,7 @@ set_target_properties(hyperopenapitest PROPERTIES
     WIN32_EXECUTABLE TRUE
 )
 
-target_link_libraries(hyperopenapitest PRIVATE Qt6::Quick Qt6::WebSockets generatedLibrary)
+target_link_libraries(hyperopenapitest PRIVATE Qt6::Quick Qt6::WebSockets hyperdeckClientLibrary cameraClientLibrary)
 
 install(TARGETS hyperopenapitest
     BUNDLE DESTINATION .
