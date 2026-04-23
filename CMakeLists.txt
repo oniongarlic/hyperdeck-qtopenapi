@@ -21,17 +21,35 @@ qt_add_executable(hyperopenapitest
 qt_add_library(hyperdeckClientLibrary)
 qt_add_openapi_client(hyperdeckClientLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/hyperdeck/HyperDeckRESTControl.yaml)
 
-qt_add_library(cameraClientLibrary)
-qt_add_openapi_client(cameraClientLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/SystemControl.yaml)
-qt_add_openapi_client(cameraClientLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/EventControl.yaml)
-qt_add_openapi_client(cameraClientLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/AudioControl.yaml)
-qt_add_openapi_client(cameraClientLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/ColorCorrectionControl.yaml)
-qt_add_openapi_client(cameraClientLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/LensControl.yaml)
-qt_add_openapi_client(cameraClientLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/MediaControl.yaml)
-qt_add_openapi_client(cameraClientLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/PresetControl.yaml)
-qt_add_openapi_client(cameraClientLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/TimelineControl.yaml)
-qt_add_openapi_client(cameraClientLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/TransportControl.yaml)
-qt_add_openapi_client(cameraClientLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/VideoControl.yaml)
+qt_add_library(cameraSystemClientLibrary)
+qt_add_openapi_client(cameraSystemClientLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/SystemControl.yaml)
+
+qt_add_library(cameraEventClientLibrary)
+qt_add_openapi_client(cameraEventClientLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/EventControl.yaml)
+
+qt_add_library(cameraAudioClientLibrary)
+qt_add_openapi_client(cameraAudioClientLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/AudioControl.yaml)
+
+qt_add_library(cameraCCClientLibrary)
+qt_add_openapi_client(cameraCCClientLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/ColorCorrectionControl.yaml)
+
+qt_add_library(cameraLensClientLibrary)
+qt_add_openapi_client(cameraLensClientLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/LensControl.yaml)
+
+qt_add_library(cameraMediaClientLibrary)
+qt_add_openapi_client(cameraMediaClientLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/MediaControl.yaml)
+
+qt_add_library(cameraPresetClientLibrary)
+qt_add_openapi_client(cameraPresetClientLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/PresetControl.yaml)
+
+qt_add_library(cameraTimelineClientLibrary)
+qt_add_openapi_client(cameraTimelineClientLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/TimelineControl.yaml)
+
+qt_add_library(cameraTransportClientLibrary)
+qt_add_openapi_client(cameraTransportClientLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/TransportControl.yaml)
+
+qt_add_library(cameraVideoClientLibrary)
+qt_add_openapi_client(cameraVideoClientLibrary SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/VideoControl.yaml)
 
 qt_add_qml_module(hyperopenapitest
     URI oatest
@@ -51,7 +69,19 @@ set_target_properties(hyperopenapitest PROPERTIES
     WIN32_EXECUTABLE TRUE
 )
 
-target_link_libraries(hyperopenapitest PRIVATE Qt6::Quick Qt6::WebSockets hyperdeckClientLibrary cameraClientLibrary)
+target_link_libraries(hyperopenapitest PRIVATE
+    Qt6::Quick Qt6::WebSockets
+    hyperdeckClientLibrary
+    cameraSystemClientLibrary
+    cameraEventClientLibrary
+    cameraAudioClientLibrary
+    cameraCCClientLibrary
+    cameraLensClientLibrary
+    cameraMediaClientLibrary
+    cameraPresetClientLibrary
+    cameraTimelineClientLibrary
+    cameraTransportClientLibrary
+    cameraVideoClientLibrary)
 
 install(TARGETS hyperopenapitest
     BUNDLE DESTINATION .
