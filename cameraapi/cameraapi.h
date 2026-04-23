@@ -8,7 +8,7 @@
 
 #include <QDebug>
 
-#include "../camera_system_api/client/defaultcamerasystemapi.h"
+#include "../../../cameraapi/camera_system_api/client/defaultcamerasystemapi.h"
 
 class CameraAPI : public QObject
 {
