@@ -1,0 +1,61 @@
+openapi: 3.0.1
+info:
+  title: Monitor Output Control API
+  description: API for controlling Monitor Output Settings on Blackmagic Design products.
+  version: 1.0.0
+servers:
+  - url: /control/api/v1
+paths:
+  /monitorOutput/audioSources:
+    get:
+      summary: List monitor output's available audio sources.
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                description: List of available audio sources.
+                items:
+                  $ref: '#/components/schemas/MonitorOutputAudioSource'
+  /monitorOutput/audioSources/active:
+    get:
+      summary: Get active monitor output audio source.
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonitorOutputAudioSource'
+    put:
+      summary: Set active monitor output audio source.
+      requestBody:
+        description: Update monitor output's audio source.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MonitorOutputAudioSourceRequest'
+      responses:
+        204:
+          description: No Content
+        400:
+          description: Bad Request
+components:
+  schemas:
+    MonitorOutputAudioSource:
+      type: string
+      enum:
+        - Auto
+        - SDI Input
+        - Remote Source
+      example: SDI Input
+    MonitorOutputAudioSourceRequest:
+      type: object
+      required:
+        - audioSource
+      properties:
+        audioSource:
+          $ref: '#/components/schemas/MonitorOutputAudioSource'

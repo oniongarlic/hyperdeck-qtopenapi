@@ -1,0 +1,174 @@
+openapi: 3.0.1
+info:
+  title: System Control API
+  description: API for controlling the System Modes on Blackmagic Design products.
+  version: 1.0.0
+servers:
+- url: /control/api/v1
+paths:
+  /system:
+    get:
+      summary: Get device system information.
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemResponse'
+        501:
+          description: This functionality is not implemented for the device in use.
+  /system/product:
+    get:
+      summary: Get device product information.
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductInfo'
+        501:
+          description: This functionality is not implemented for the device in use.
+  /system/videoFormat:
+    get:
+      summary: Get the currently selected video format.
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetVideoFormat'
+        501:
+          description: This functionality is not implemented for the device in use.
+    put:
+      summary: Set the video format.
+      requestBody:
+        description: Update the system video format.
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/PutVideoFormatDetailed'
+                - $ref: '#/components/schemas/PutVideoFormatName'
+      responses:
+        204:
+          description: No Content
+        501:
+          description: This functionality is not implemented for the device in use.
+  /system/supportedVideoFormats:
+    get:
+      summary: Get the list of supported video formats for the current system state.
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportedVideoFormats'
+        501:
+          description: This functionality is not implemented for the device in use.
+components:
+  schemas:
+    SystemResponse:
+      type: object
+      description: The properties will be populated only with the values that are supported/implemented by the device in use.
+      properties:
+        videoFormat:
+          $ref: "#/components/schemas/GetVideoFormat"
+    ProductInfo:
+      type: object
+      description: Product Information.
+      properties:
+        deviceName:
+          type: string
+          description: Name of device as displayed in Setup.
+          example:
+        productName:
+          type: string
+          description: Device's product name.
+          example: Blackmagic Web Presenter HD
+        softwareVersion:
+          type: string
+          description: Software version running on device.
+          example: "3.4"
+    SupportedVideoFormats:
+      type: object
+      description: List of supported video formats.
+      properties:
+        formats:
+          type: array
+          description: List of video formats.
+          items:
+            $ref: "#/components/schemas/GetVideoFormat"
+    FrameRate:
+      type: string
+      example: "29.97"
+      enum:
+        - "23.98"
+        - "24.00"
+        - "24"
+        - "25.00"
+        - "25"
+        - "29.97"
+        - "30.00"
+        - "30"
+        - "47.95"
+        - "48.00"
+        - "48"
+        - "50.00"
+        - "50"
+        - "59.94"
+        - "60.00"
+        - "60"
+    GetVideoFormat:
+      type: object
+      description: Video format configuration.
+      required: 
+        - name
+      properties:
+        name:
+          type: string  
+          description: Video format serialised as a string, or 'Auto' to detect the SDI Input video format.
+          example: 1920x1080p29.97
+        frameRate:
+          $ref: "#/components/schemas/FrameRate"
+        height:
+          type: number
+          description: Height dimension of video format.
+          example: 1080
+        width:
+          type: number
+          description: Width dimension of video format.
+          example: 1920
+        interlaced:
+          type: boolean
+          description: Is the display format interlaced?
+          example: false
+    PutVideoFormatDetailed:
+      type: object
+      properties:
+        frameRate:
+          $ref: "#/components/schemas/FrameRate"
+        height:
+          type: number
+          description: Height dimension of video format.
+          example: 1080
+        width:
+          type: number
+          description: Width dimension of video format.
+          example: 1920
+        interlaced:
+          type: boolean
+          description: Is the display format interlaced?
+          example: false
+    PutVideoFormatName:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string  
+          description: Video format serialised as a string, or 'Auto' to detect the SDI Input video format.
+          example: 1920x1080p29.97

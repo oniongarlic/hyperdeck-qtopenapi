@@ -1,0 +1,265 @@
+asyncapi: 2.6.0
+info:
+  title: Notification websocket
+  version: 1.0.0
+  description: Service that notifies subscribers of device state changes.
+servers:
+  public:
+    url: /control/api/v1/event/websocket
+    protocol: ws
+channels:
+  /:
+    subscribe:
+      message:
+        oneOf:
+          - $ref: '#/components/messages/responseMessage'
+          - $ref: '#/components/messages/eventMessage'
+    publish:
+      message:
+        oneOf:
+          - $ref: '#/components/messages/responseMessage'
+components:
+  messages:
+    requestMessage:
+      payload:
+        type: object
+        properties:
+          data:
+            $ref: '#/components/messages/actionRequest'
+          type:
+            type: string
+            enum: [request]
+          id:
+            description: Optional parameter that repeats the id in the output for tracking messages
+            type: number
+        x-response:
+          oneOf:
+            - $ref: '#/components/messages/responseMessage'
+    responseMessage:
+      payload:
+        type: object
+        properties:
+          data:
+            $ref: '#/components/schemas/actionData'
+          type:
+            type: string
+            enum: [response]
+          id:
+            description: Optional parameter that repeats the id in the output for tracking messages
+            type: number
+        x-response:
+          oneOf:
+            - $ref: '#/components/schemas/actionData'
+    eventMessage:
+      payload:
+        type: object
+        properties:
+          data:
+            $ref: '#/components/schemas/eventData'
+          type:
+            type: string
+            enum: [event]
+        x-response:
+          oneOf:
+            - $ref: '#/components/schemas/actionData'
+    actionRequest:
+      payload:
+        type: object
+        properties:
+          action:
+            $ref: '#/components/schemas/action'
+          properties:
+            type: array
+            items:
+              $ref: '#/components/schemas/deviceProperty'
+          values:
+            type: object
+            properties:
+              <schemas/property>:
+                $ref: '#/components/schemas/devicePropertyValue'
+  schemas:
+    actionData:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/action'
+        properties:
+          type: array
+          items:
+            $ref: '#/components/schemas/deviceProperty'
+        values:
+          type: object
+          properties:
+            <schemas/property>:
+              $ref: '#/components/schemas/devicePropertyValue'
+        success:
+          type: boolean
+    eventData:
+      type: object
+      properties:
+        action:
+          type: string
+          enum:
+            - propertyValueChanged
+        property:
+          $ref: '#/components/schemas/deviceProperty'
+        value:
+          $ref: '#/components/schemas/devicePropertyValue'
+    action:
+      type: string
+      enum:
+        - subscribe
+        - unsubscribe
+        - listSubscriptions
+        - listProperties
+    deviceProperty:
+      type: string
+      description: Device property the user can subscribe to. The user can either choose a value from the predefined enum or provide a wildcard string.
+      enum:
+        - $ref: '#/components/schemas/SystemResponse/x-propertyName'
+        - $ref: '#/components/schemas/SystemProductInfo/x-propertyName'
+        - $ref: '#/components/schemas/LivestreamStatus/x-propertyName'
+        - $ref: '#/components/schemas/LivestreamActivePlatformConfiguration/x-propertyName'
+        - $ref: '#/components/schemas/LivestreamPlatforms/x-propertyName'
+      pattern: '.*'
+    devicePropertyValue:
+      type: object
+      description: Value of the property.
+      oneOf:
+        - $ref: '#/components/schemas/SystemResponse'
+        - $ref: '#/components/schemas/SystemProductInfo'
+        - $ref: '#/components/schemas/LivestreamStatus'
+        - $ref: '#/components/schemas/LivestreamActivePlatformConfiguration'
+        - $ref: '#/components/schemas/LivestreamPlatforms'
+    SystemResponse:
+      type: object
+      x-propertyName: /system
+      properties:
+        videoFormat:
+          $ref: "#/components/schemas/VideoFormat"
+    FrameRate:
+      type: string
+      enum:
+        - "23.98"
+        - "24.00"
+        - "24"
+        - "25.00"
+        - "25"
+        - "29.97"
+        - "30.00"
+        - "30"
+        - "47.95"
+        - "48.00"
+        - "48"
+        - "50.00"
+        - "50"
+        - "59.94"
+        - "60.00"
+        - "60"
+    VideoFormat:
+      type: object
+      x-propertyName: /system/videoFormat
+      description: Currently selected video format.
+      properties:
+        name:
+          type: string  
+          description: Video format serialised as a string, or 'Auto' to detect the SDI Input video format.
+          example: 1920x1080p29.97
+        frameRate:
+          $ref: "#/components/schemas/FrameRate"
+        height:
+          type: number
+          description: Height dimension of video format.
+          example: 1080
+        width:
+          type: number
+          description: Width dimension of video format.
+          example: 1920
+        interlaced:
+          type: boolean
+          description: Is the display format interlaced?
+          example: false
+    SystemProductInfo:
+      type: object
+      x-propertyName: /system/product
+      description: Device product information.
+      properties:
+        deviceName:
+          type: string
+          description: Name of device as displayed in Setup.
+          example:
+        productName:
+          type: string
+          description: Device's product name.
+          example: Blackmagic Web Presenter HD
+        softwareVersion:
+          type: string
+          description: Software version running on device.
+          example: "3.4"
+    LivestreamStatus:
+      type: object
+      x-propertyName: /livestreams/0
+      description: Livestream's current status.
+      properties:
+        status:
+          type: string
+          enum:
+            - Idle
+            - Connecting
+            - Streaming
+            - Flushing
+            - Interrupted
+          example: Idle
+        bitrate:
+          type: integer
+          description: Current bitrate (bps).
+          example: 123456789
+        effectiveVideoFormat:
+          type: string
+          description: Effective video format for the livestream, serialised as a string.
+          example: 1280x720p30
+        duration:
+          type: integer
+          description: Current stream duration in seconds. Absent if livestream is idle.
+          example: 1234
+        cache:
+          type: integer
+          description: Current stream cache usage percentage.
+          example: 7
+    LivestreamActivePlatformConfiguration:
+      type: object
+      x-propertyName: /livestreams/0/activePlatform
+      description: Livestream's current active platform configuration.
+      properties:
+        platform:
+          type: string
+          description: Platform name.
+          example: Youtube SRT (Beta)
+        server:
+          type: string
+          description: The platform's server name, or "Custom" when the URL is customizable.
+          example: Primary
+        key:
+          type: string
+          description: Stream key.
+          example: ABCDEF-GHIJKL-MNOPQR
+        passphrase:
+          type: string
+          description: Passphrase. Only included for SRT streams.
+          example: pp-abcd-efgh-ijkl-mnop
+        quality:
+          type: string
+          description: Quality level name.
+          example: Streaming High
+        url:
+          type: string
+          description: Livestream destination. Only included when URL is customizable.
+          example: rtmp://192.168.0.1/app
+    LivestreamPlatforms:
+      type: array
+      x-propertyName: /livestreams/platforms
+      description: List of available livestream platforms.
+      items:
+        type: string
+        description: Platform Name.
+        example: Facebook
