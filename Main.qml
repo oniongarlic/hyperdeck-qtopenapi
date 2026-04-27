@@ -6,13 +6,15 @@ import QtQuick.Layouts
 
 import org.tal.hyperdeck
 
+import org.tal.camera
+
 ApplicationWindow {
     width: 800
     height: 480
     visible: true
-    title: qsTr("HyperDeck API Tester")
+    title: qsTr("HyperDeck API Tester")    
 
-    HyperDeckDevice {
+    HyperdeckApi {
         id: hdd
         Component.onCompleted: {
             setServer("192.168.0.233", "http");

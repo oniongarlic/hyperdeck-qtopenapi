@@ -9,29 +9,37 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Quick WebSockets OpenApiCommon OpenApiTools)
+find_package(Qt6 REQUIRED COMPONENTS Qml Quick WebSockets OpenApiCommon OpenApiTools)
 
 qt_standard_project_setup(REQUIRES 6.11)
 
 add_subdirectory(cameraapi)
 
 qt_add_executable(hyperopenapitest
-    hyperdeckapi.h hyperdeckapi.cpp
-    #cameraapi.h cameraapi.cpp
     main.cpp
 )
 
-qt_add_library(hyperdeckClientLibrary)
-qt_add_openapi_client(hyperdeckClientLibrary
+qt_add_library(hyperdeck_api)
+qt_add_openapi_client(hyperdeck_api
     SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/hyperdeck/HyperDeckRESTControl.yaml
-    OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/hyperdeck_api/
+    OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/hyperdeck_api/   
 )
+
+qt_add_library(hyperdeck STATIC)
+qt_add_qml_module(hyperdeck
+    URI org.tal.hyperdeck    
+    SOURCES hyperdeckapi.h hyperdeckapi.cpp clipmodel.h clipmodel.cpp
+)
+target_include_directories(hyperdeck PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/hyperdeck_api/client)
+target_link_libraries(hyperdeck
+    PRIVATE Qt6::Quick Qt6::WebSockets
+    hyperdeck_api
+    )
 
 qt_add_qml_module(hyperopenapitest
     URI oatest
     QML_FILES
-    Main.qml
-    SOURCES clipmodel.h clipmodel.cpp
+    Main.qml    
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -47,8 +55,8 @@ set_target_properties(hyperopenapitest PROPERTIES
 
 target_link_libraries(hyperopenapitest PRIVATE
     Qt6::Quick Qt6::WebSockets
-    hyperdeckClientLibrary
-    libCameraAPI
+    hyperdeckplugin
+    libCameraAPIplugin
     )
 
 install(TARGETS hyperopenapitest

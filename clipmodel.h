@@ -2,6 +2,7 @@
 #define CLIPMODEL_H
 
 #include <QObject>
+#include <qqmlintegration.h>
 
 #pragma once
 
@@ -11,6 +12,7 @@
 class ClipModel : public QAbstractListModel
 {
     Q_OBJECT
+    QML_ELEMENT
 
 public:
     explicit ClipModel(QObject *parent = nullptr);
