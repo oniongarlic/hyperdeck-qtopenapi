@@ -101,3 +101,5 @@ target_link_libraries(libCameraAPI PRIVATE
     #cameraVideoClientLibrary
 )
 
+target_compile_definitions(libCameraAPI PRIVATE LIBCAMERAAPI_LIBRARY)
+
