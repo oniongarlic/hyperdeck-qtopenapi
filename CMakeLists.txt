@@ -14,6 +14,7 @@ find_package(Qt6 REQUIRED COMPONENTS Qml Quick WebSockets OpenApiCommon OpenApiT
 qt_standard_project_setup(REQUIRES 6.11)
 
 add_subdirectory(camera)
+add_subdirectory(webpresenter)
 
 qt_add_executable(hyperopenapitest
     main.cpp
