@@ -8,21 +8,21 @@
 
 #include <QDebug>
 
-#include "audioapi.h"
-#include "clipsapi.h"
-#include "eventapi.h"
-#include "externalmediaapi.h"
-#include "inputapi.h"
-#include "mediaapi.h"
-#include "monitoringapi.h"
-#include "systemapi.h"
-#include "mediaapi.h"
-#include "nasapi.h"
-#include "playrangeapi.h"
-#include "recordcacheapi.h"
-#include "spillapi.h"
-#include "timelineapi.h"
-#include "transportapi.h"
+#include "audiohyperdeckapi.h"
+#include "clipshyperdeckapi.h"
+#include "eventhyperdeckapi.h"
+#include "externalmediahyperdeckapi.h"
+#include "inputhyperdeckapi.h"
+#include "mediahyperdeckapi.h"
+#include "monitoringhyperdeckapi.h"
+#include "systemhyperdeckapi.h"
+#include "mediahyperdeckapi.h"
+#include "nashyperdeckapi.h"
+#include "playrangehyperdeckapi.h"
+#include "recordcachehyperdeckapi.h"
+#include "spillhyperdeckapi.h"
+#include "timelinehyperdeckapi.h"
+#include "transporthyperdeckapi.h"
 
 #include "clipmodel.h"
 
@@ -31,21 +31,20 @@ class HyperdeckApi : public QObject
     Q_OBJECT
     QML_ELEMENT
 
-    Q_PROPERTY(QtOpenAPI::SystemApi* system READ getSystem FINAL CONSTANT)
-    Q_PROPERTY(QtOpenAPI::TransportApi* transport READ getTransport FINAL CONSTANT)
-    Q_PROPERTY(QtOpenAPI::TimelineApi* timeline READ getTimeline FINAL CONSTANT)
-    Q_PROPERTY(QtOpenAPI::MediaApi* media READ getMedia FINAL CONSTANT)
-    Q_PROPERTY(QtOpenAPI::AudioApi* audio READ getAudio FINAL CONSTANT)
-    Q_PROPERTY(QtOpenAPI::ClipsApi* clips READ getClips FINAL CONSTANT)
-    Q_PROPERTY(QtOpenAPI::EventApi* event READ getEvent FINAL CONSTANT)
-    Q_PROPERTY(QtOpenAPI::ExternalMediaApi* externalmedia READ getExternalMedia FINAL CONSTANT)
-    Q_PROPERTY(QtOpenAPI::InputApi* input READ getInput FINAL CONSTANT)
-    Q_PROPERTY(QtOpenAPI::MonitoringApi* monitoring READ getMonitoring FINAL CONSTANT)
-    Q_PROPERTY(QtOpenAPI::NASApi* nas READ getNas FINAL CONSTANT)
-    Q_PROPERTY(QtOpenAPI::PlayRangeApi* playrange READ getPlayRange FINAL CONSTANT)
-    Q_PROPERTY(QtOpenAPI::RecordCacheApi* recordcache READ getRecordCache FINAL CONSTANT)
-    Q_PROPERTY(QtOpenAPI::SpillApi* spill READ getSpill FINAL CONSTANT)
-
+    Q_PROPERTY(BMHyperdeck::SystemHyperdeckApi* system READ getSystem FINAL CONSTANT)
+    Q_PROPERTY(BMHyperdeck::TransportHyperdeckApi* transport READ getTransport FINAL CONSTANT)
+    Q_PROPERTY(BMHyperdeck::TimelineHyperdeckApi* timeline READ getTimeline FINAL CONSTANT)
+    Q_PROPERTY(BMHyperdeck::MediaHyperdeckApi* media READ getMedia FINAL CONSTANT)
+    Q_PROPERTY(BMHyperdeck::AudioHyperdeckApi* audio READ getAudio FINAL CONSTANT)
+    Q_PROPERTY(BMHyperdeck::ClipsHyperdeckApi* clips READ getClips FINAL CONSTANT)
+    Q_PROPERTY(BMHyperdeck::EventHyperdeckApi* event READ getEvent FINAL CONSTANT)
+    Q_PROPERTY(BMHyperdeck::ExternalMediaHyperdeckApi* externalmedia READ getExternalMedia FINAL CONSTANT)
+    Q_PROPERTY(BMHyperdeck::InputHyperdeckApi* input READ getInput FINAL CONSTANT)
+    Q_PROPERTY(BMHyperdeck::MonitoringHyperdeckApi* monitoring READ getMonitoring FINAL CONSTANT)
+    Q_PROPERTY(BMHyperdeck::NASHyperdeckApi* nas READ getNas FINAL CONSTANT)
+    Q_PROPERTY(BMHyperdeck::PlayRangeHyperdeckApi* playrange READ getPlayRange FINAL CONSTANT)
+    Q_PROPERTY(BMHyperdeck::RecordCacheHyperdeckApi* recordcache READ getRecordCache FINAL CONSTANT)
+    Q_PROPERTY(BMHyperdeck::SpillHyperdeckApi* spill READ getSpill FINAL CONSTANT)
 
 public:
     explicit HyperdeckApi(QObject *parent = nullptr);
@@ -56,20 +55,20 @@ public:
     Q_INVOKABLE void open();
     Q_INVOKABLE void close();
 
-    Q_INVOKABLE QtOpenAPI::TransportApi* getTransport() { return &transport; }
-    Q_INVOKABLE QtOpenAPI::SystemApi* getSystem() { return &system; }
-    Q_INVOKABLE QtOpenAPI::TimelineApi* getTimeline() { return &timeline; }
-    Q_INVOKABLE QtOpenAPI::MediaApi* getMedia() { return &media; }
-    Q_INVOKABLE QtOpenAPI::AudioApi* getAudio() { return &audio; }
-    Q_INVOKABLE QtOpenAPI::ClipsApi* getClips() { return &clips; }
-    Q_INVOKABLE QtOpenAPI::EventApi* getEvent() { return &event; }
-    Q_INVOKABLE QtOpenAPI::ExternalMediaApi* getExternalMedia() { return &externalmedia; }
-    Q_INVOKABLE QtOpenAPI::InputApi* getInput() { return &input; }
-    Q_INVOKABLE QtOpenAPI::MonitoringApi* getMonitoring() { return &monitoring; }
-    Q_INVOKABLE QtOpenAPI::NASApi* getNas() { return &nas; }
-    Q_INVOKABLE QtOpenAPI::PlayRangeApi* getPlayRange() { return &playrange; }
-    Q_INVOKABLE QtOpenAPI::RecordCacheApi* getRecordCache() { return &recordcache; }
-    Q_INVOKABLE QtOpenAPI::SpillApi* getSpill() { return &spill; }
+    Q_INVOKABLE BMHyperdeck::TransportHyperdeckApi* getTransport() { return &transport; }
+    Q_INVOKABLE BMHyperdeck::SystemHyperdeckApi* getSystem() { return &system; }
+    Q_INVOKABLE BMHyperdeck::TimelineHyperdeckApi* getTimeline() { return &timeline; }
+    Q_INVOKABLE BMHyperdeck::MediaHyperdeckApi* getMedia() { return &media; }
+    Q_INVOKABLE BMHyperdeck::AudioHyperdeckApi* getAudio() { return &audio; }
+    Q_INVOKABLE BMHyperdeck::ClipsHyperdeckApi* getClips() { return &clips; }
+    Q_INVOKABLE BMHyperdeck::EventHyperdeckApi* getEvent() { return &event; }
+    Q_INVOKABLE BMHyperdeck::ExternalMediaHyperdeckApi* getExternalMedia() { return &externalmedia; }
+    Q_INVOKABLE BMHyperdeck::InputHyperdeckApi* getInput() { return &input; }
+    Q_INVOKABLE BMHyperdeck::MonitoringHyperdeckApi* getMonitoring() { return &monitoring; }
+    Q_INVOKABLE BMHyperdeck::NASHyperdeckApi* getNas() { return &nas; }
+    Q_INVOKABLE BMHyperdeck::PlayRangeHyperdeckApi* getPlayRange() { return &playrange; }
+    Q_INVOKABLE BMHyperdeck::RecordCacheHyperdeckApi* getRecordCache() { return &recordcache; }
+    Q_INVOKABLE BMHyperdeck::SpillHyperdeckApi* getSpill() { return &spill; }
 
     Q_INVOKABLE ClipModel* getClipsModel() { return &m_clip_model; }
 
@@ -77,20 +76,20 @@ signals:
     void connectionError();
 
 protected:
-    QtOpenAPI::SystemApi system;
-    QtOpenAPI::TransportApi transport;
-    QtOpenAPI::TimelineApi timeline;
-    QtOpenAPI::MediaApi media;
-    QtOpenAPI::AudioApi audio;
-    QtOpenAPI::ClipsApi clips;
-    QtOpenAPI::EventApi event;
-    QtOpenAPI::ExternalMediaApi externalmedia;
-    QtOpenAPI::InputApi input;
-    QtOpenAPI::MonitoringApi monitoring;
-    QtOpenAPI::NASApi nas;
-    QtOpenAPI::PlayRangeApi playrange;
-    QtOpenAPI::RecordCacheApi recordcache;
-    QtOpenAPI::SpillApi spill;
+    BMHyperdeck::SystemHyperdeckApi system;
+    BMHyperdeck::TransportHyperdeckApi transport;
+    BMHyperdeck::TimelineHyperdeckApi timeline;
+    BMHyperdeck::MediaHyperdeckApi media;
+    BMHyperdeck::AudioHyperdeckApi audio;
+    BMHyperdeck::ClipsHyperdeckApi clips;
+    BMHyperdeck::EventHyperdeckApi event;
+    BMHyperdeck::ExternalMediaHyperdeckApi externalmedia;
+    BMHyperdeck::InputHyperdeckApi input;
+    BMHyperdeck::MonitoringHyperdeckApi monitoring;
+    BMHyperdeck::NASHyperdeckApi nas;
+    BMHyperdeck::PlayRangeHyperdeckApi playrange;
+    BMHyperdeck::RecordCacheHyperdeckApi recordcache;
+    BMHyperdeck::SpillHyperdeckApi spill;
 
 protected slots:
     void onWsConnected();

@@ -15,26 +15,24 @@ qt_standard_project_setup(REQUIRES 6.11)
 
 add_subdirectory(camera)
 add_subdirectory(webpresenter)
+add_subdirectory(hyperdeck)
 
 qt_add_executable(hyperopenapitest
     main.cpp
 )
 
-qt_add_library(hyperdeck_api)
-qt_add_openapi_client(hyperdeck_api
-    SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/hyperdeck/HyperDeckRESTControl.yaml
-    OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/hyperdeck_api/   
-)
-
-qt_add_library(hyperdeck STATIC)
-qt_add_qml_module(hyperdeck
+qt_add_library(hyperdeck_api STATIC)
+qt_add_qml_module(hyperdeck_api
     URI org.tal.hyperdeck    
     SOURCES hyperdeckapi.h hyperdeckapi.cpp clipmodel.h clipmodel.cpp
 )
-target_include_directories(hyperdeck PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/hyperdeck_api/client)
-target_link_libraries(hyperdeck
-    PRIVATE Qt6::Quick Qt6::WebSockets
-    hyperdeck_api
+target_include_directories(hyperdeck_api
+    PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/hyperdeck/hyperdeck_api/client
+    Qt6::OpenApiCommon
+    )
+target_link_libraries(hyperdeck_api
+    PRIVATE Qt6::Quick Qt6::WebSockets Qt6::OpenApiCommon
+    hyperdeckClientLibrary
     )
 
 qt_add_qml_module(hyperopenapitest
@@ -56,7 +54,7 @@ set_target_properties(hyperopenapitest PROPERTIES
 
 target_link_libraries(hyperopenapitest PRIVATE
     Qt6::Quick Qt6::WebSockets
-    hyperdeckplugin
+    hyperdeck_apiplugin
     libCameraAPIplugin
     )
 

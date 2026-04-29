@@ -9,7 +9,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Quick WebSockets OpenApiCommon OpenApiTools)
+find_package(Qt6 REQUIRED COMPONENTS OpenApiCommon OpenApiTools)
 
 qt_standard_project_setup(REQUIRES 6.11)
 
