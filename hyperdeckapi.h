@@ -24,9 +24,11 @@
 #include "timelinehyperdeckapi.h"
 #include "transporthyperdeckapi.h"
 
+#include "bmbase.h"
+
 #include "clipmodel.h"
 
-class HyperdeckApi : public QObject
+class HyperdeckApi : public BMBase
 {
     Q_OBJECT
     QML_ELEMENT
@@ -50,11 +52,6 @@ public:
     explicit HyperdeckApi(QObject *parent = nullptr);
     ~HyperdeckApi();
 
-    Q_INVOKABLE void setServer(QString hostname, QString protocol);    
-    Q_INVOKABLE void setApiServer(QtOpenApiCommon::QOAIBaseApi *api);
-    Q_INVOKABLE void open();
-    Q_INVOKABLE void close();
-
     Q_INVOKABLE BMHyperdeck::TransportHyperdeckApi* getTransport() { return &transport; }
     Q_INVOKABLE BMHyperdeck::SystemHyperdeckApi* getSystem() { return &system; }
     Q_INVOKABLE BMHyperdeck::TimelineHyperdeckApi* getTimeline() { return &timeline; }
@@ -72,9 +69,6 @@ public:
 
     Q_INVOKABLE ClipModel* getClipsModel() { return &m_clip_model; }
 
-signals:
-    void connectionError();
-
 protected:
     BMHyperdeck::SystemHyperdeckApi system;
     BMHyperdeck::TransportHyperdeckApi transport;
@@ -91,17 +85,9 @@ protected:
     BMHyperdeck::RecordCacheHyperdeckApi recordcache;
     BMHyperdeck::SpillHyperdeckApi spill;
 
-protected slots:
-    void onWsConnected();
-    void onWsDisconnected();
-    void onWsTextMessageReceived(QString message);
-    void onWsErrorOccurred(QAbstractSocket::SocketError error);
+    void onSubscribeHandler(QJsonObject jso);
 
 private:
-    QString m_hostname;
-    QString m_protocol;    
-    QWebSocket m_ws;
-
     QString m_device;
     QString m_product;
     QString m_version;

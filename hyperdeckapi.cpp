@@ -4,157 +4,46 @@
 #include <QJsonObject>
 
 HyperdeckApi::HyperdeckApi(QObject *parent)
-    : QObject{parent}
-{}
+    : BMBase{parent}
+{
+    m_oac.append(&system);
+    m_oac.append(&transport);
+    m_oac.append(&timeline);
+    m_oac.append(&media);
+    m_oac.append(&audio);
+    m_oac.append(&clips);
+    m_oac.append(&event);
+    m_oac.append(&externalmedia);
+    m_oac.append(&input);
+    m_oac.append(&monitoring);
+    m_oac.append(&nas);
+    m_oac.append(&playrange);
+    m_oac.append(&recordcache);
+    m_oac.append(&spill);
+}
 
 HyperdeckApi::~HyperdeckApi()
 {
-    m_ws.close();
+
 }
 
-void HyperdeckApi::setServer(QString hostname, QString protocol)
+void HyperdeckApi::onSubscribeHandler(QJsonObject jso)
 {
-    m_hostname=hostname;
-    m_protocol=protocol;
+    if (jso.contains("/system/product")) {
+        auto o=jso.value("/system/product").toObject();
+        m_device=o.value("deviceName").toString();
+        m_product=o.value("productName").toString();
+        m_version=o.value("softwareVersion").toString();
+    }
 
-    setApiServer(&system);
-    setApiServer(&transport);
-    setApiServer(&timeline);
-    setApiServer(&media);
-    setApiServer(&audio);
-    setApiServer(&clips);
-    setApiServer(&event);
-    setApiServer(&externalmedia);
-    setApiServer(&input);
-    setApiServer(&monitoring);
-    setApiServer(&nas);
-    setApiServer(&playrange);
-    setApiServer(&recordcache);
-    setApiServer(&spill);
-}
+    if (jso.contains("/timelines/0")) {
+        QVariantList tmp=jso.value("/timelines/0").toObject().value("clips").toArray().toVariantList();
+        m_clip_model.setItems(tmp);
+    }
 
-void HyperdeckApi::setApiServer(QtOpenApiCommon::QOAIBaseApi *api) {
-    auto ops=api->operations();
-
-    foreach (auto op, ops) {
-        api->setServerVariable(op, 0, "hostname", m_hostname);
-        api->setServerVariable(op, 0, "protocol", m_protocol);
+    if (jso.contains("/system/supportedVideoFormats")) {
+        QVariantList tmp=jso.value("/system/supportedVideoFormats").toObject().value("videoFormats").toArray().toVariantList();
+        qDebug() << "Video formats" << tmp;
     }
 }
 
-void HyperdeckApi::open()
-{
-    QUrl url;
-
-    url.setHost(m_hostname);
-    url.setScheme("ws");
-    url.setPath("/control/api/v1/event/websocket");
-
-    connect(&m_ws, &QWebSocket::connected, this, &HyperdeckApi::onWsConnected);
-    connect(&m_ws, &QWebSocket::errorOccurred, this, &HyperdeckApi::onWsErrorOccurred);
-    connect(&m_ws, &QWebSocket::disconnected, this, &HyperdeckApi::onWsDisconnected);
-
-    m_ws.open(url);
-}
-
-void HyperdeckApi::close()
-{
-    m_ws.close();
-    m_ws.disconnect();
-}
-
-QString makeJson(QString type, QString action)
-{
-    QJsonObject o;
-    QJsonObject d;
-
-    o.insert("type", type);
-    d.insert("action", action);
-    o.insert("data", d);
-
-    return QJsonDocument(o).toJson();
-}
-
-QString makeJsonArray(QString type, QString action, QString prop, QJsonArray array)
-{
-    QJsonObject o;
-    QJsonObject d;
-
-    o.insert("type", type);
-    d.insert("action", action);
-    d.insert(prop, array);
-    o.insert("data", d);
-
-    return QJsonDocument(o).toJson();
-}
-
-void HyperdeckApi::onWsConnected()
-{
-    qDebug("Websocket connected!");
-
-    connect(&m_ws, &QWebSocket::textMessageReceived, this, &HyperdeckApi::onWsTextMessageReceived);
-
-    m_ws.sendTextMessage(makeJson("request", "listProperties"));
-}
-
-void HyperdeckApi::onWsDisconnected()
-{
-    qDebug("Websocket disconnected");
-}
-
-void HyperdeckApi::onWsTextMessageReceived(QString message)
-{
-    qDebug() << "WS" << message;
-    auto j=QJsonDocument::fromJson(message.toUtf8());
-    qDebug() << j;
-
-    if (!j.isObject()) {
-        qWarning("Not an object ?");
-        emit connectionError();
-        return;
-    }
-
-    auto d=j.object().value("data").toObject();
-    auto a=d.value("action");
-    if (a.toString()=="listProperties") {
-        auto props=d.value("properties").toArray();
-
-        m_ws.sendTextMessage(makeJsonArray("request", "subscribe", "properties", props));
-    }
-
-    if (a.toString()=="subscribe") {
-        auto v=d.value("values").toObject();
-
-        if (v.contains("/system/product")) {
-            auto o=v.value("/system/product").toObject();
-            m_device=o.value("deviceName").toString();
-            m_product=o.value("productName").toString();
-            m_version=o.value("softwareVersion").toString();
-        }
-
-        if (v.contains("/timelines/0")) {
-            QVariantList tmp=v.value("/timelines/0").toObject().value("clips").toArray().toVariantList();
-            m_clip_model.setItems(tmp);
-        }
-
-        if (v.contains("/system/supportedVideoFormats")) {
-            QVariantList tmp=v.value("/system/supportedVideoFormats").toObject().value("videoFormats").toArray().toVariantList();
-            qDebug() << "Video formats" << tmp;
-        }
-
-    }
-
-    if (a.toString()=="propertyValueChanged") {
-        auto prop=d.value("property").toString();
-        auto value=d.value("value");
-
-        qDebug() << "Property" << prop << value;
-    }
-}
-
-void HyperdeckApi::onWsErrorOccurred(QAbstractSocket::SocketError error)
-{
-    qDebug() << "WSE" << error;
-
-    emit connectionError();
-}

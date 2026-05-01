@@ -24,7 +24,7 @@ qt_add_executable(hyperopenapitest
 qt_add_library(hyperdeck_api STATIC)
 qt_add_qml_module(hyperdeck_api
     URI org.tal.hyperdeck    
-    SOURCES hyperdeckapi.h hyperdeckapi.cpp clipmodel.h clipmodel.cpp
+    SOURCES bmbase.h bmbase.cpp hyperdeckapi.h hyperdeckapi.cpp clipmodel.h clipmodel.cpp
 )
 target_include_directories(hyperdeck_api
     PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/hyperdeck/hyperdeck_api/client
@@ -38,7 +38,7 @@ target_link_libraries(hyperdeck_api
 qt_add_qml_module(hyperopenapitest
     URI oatest
     QML_FILES
-    Main.qml    
+    Main.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
