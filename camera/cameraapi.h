@@ -8,17 +8,20 @@
 
 #include <QDebug>
 
-// #include "../../../cameraapi/camera_system_api/client/defaultcamerasystemapi.h"
+#include "../bmbase.h"
+
 #include "client/defaultcamerasystemapi.h"
 #include "client/defaultcameraeventapi.h"
+#include "client/defaultcameratransportapi.h"
+#include "client/defaultcameravideoapi.h"
 
-class CameraAPI : public QObject
+class CameraApi : public BMBase
 {
     Q_OBJECT
     QML_ELEMENT
 
 public:
-    explicit CameraAPI(QObject *parent = nullptr);
+    explicit CameraApi(QObject *parent = nullptr);
 
     Q_INVOKABLE BMCamera::DefaultCameraSystemApi* getSystem() { return &system; }
     Q_INVOKABLE BMCamera::DefaultCameraEventApi* getEvent() { return &event; }
@@ -26,6 +29,9 @@ public:
 protected:
     BMCamera::DefaultCameraSystemApi system;
     BMCamera::DefaultCameraEventApi event;
+
+    BMCamera::DefaultCameraTransportApi transport;
+    BMCamera::DefaultCameraVideoApi video;
 
 signals:
 };

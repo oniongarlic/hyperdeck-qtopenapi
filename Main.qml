@@ -12,14 +12,26 @@ ApplicationWindow {
     width: 800
     height: 480
     visible: true
-    title: qsTr("HyperDeck API Tester")    
+    title: qsTr("HyperDeck API Tester")
+
+    CameraApi {
+        id: caa
+
+        Component.onCompleted: {
+            setServer("192.168.0.234", "http");
+            caa.open();
+        }
+    }
 
     HyperdeckApi {
         id: hdd
         Component.onCompleted: {
             setServer("192.168.0.233", "http");
             hdd.open();            
-        }                
+        }
+        onConnectionError: {
+            console.debug("Error connecting")
+        }
     }
 
     Connections {

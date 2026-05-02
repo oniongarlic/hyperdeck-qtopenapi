@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(libCameraAPI VERSION 0.1 LANGUAGES CXX)
+project(camera_api VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -67,28 +67,35 @@ qt_add_openapi_client(cameraEventClientLibrary
 #     OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/camera_timeline_api/
 # )
 
-# qt_add_library(cameraTransportClientLibrary)
-# qt_add_openapi_client(cameraTransportClientLibrary
-#     SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/TransportControl.yaml
-#     OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/camera_transport_api/
-# )
+qt_add_library(cameraTransportClientLibrary)
+qt_add_openapi_client(cameraTransportClientLibrary
+    SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/TransportControl.yaml
+    OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/camera_transport_api/
+    OUTPUT_PUBLIC_HEADERS_DIR ${CMAKE_CURRENT_BINARY_DIR}/camera_transport_api/
+    ADDITIONAL_PROPERTIES cppNamespace=BMCamera
+    GENERATE_OPTIONS --api-name-suffix CameraTransportApi
+)
 
-# qt_add_library(cameraVideoClientLibrary)
-# qt_add_openapi_client(cameraVideoClientLibrary
-#     SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/VideoControl.yaml
-#     OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/camera_video_api/
-# )
+qt_add_library(cameraVideoClientLibrary)
+qt_add_openapi_client(cameraVideoClientLibrary
+    SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/VideoControl.yaml
+    OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/camera_video_api/
+    OUTPUT_PUBLIC_HEADERS_DIR ${CMAKE_CURRENT_BINARY_DIR}/camera_video_api/
+    ADDITIONAL_PROPERTIES cppNamespace=BMCamera
+    GENERATE_OPTIONS --api-name-suffix CameraVideoApi
+)
 
-qt_add_library(libCameraAPI STATIC)
-qt_add_qml_module(libCameraAPI
+qt_add_library(camera_api STATIC)
+qt_add_qml_module(camera_api
     URI org.tal.camera
     SOURCES cameraapi.h cameraapi.cpp
 )
 
-target_include_directories(libCameraAPI INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/sadfjknkasdnfjkasdnfkjasdnfjk)
+target_include_directories(camera_api INTERFACE bmbase)
 
-target_link_libraries(libCameraAPI PRIVATE
+target_link_libraries(camera_api PRIVATE
     Qt6::Quick Qt6::WebSockets
+    bmbase
     cameraSystemClientLibrary
     cameraEventClientLibrary
     #cameraAudioClientLibrary
@@ -97,9 +104,9 @@ target_link_libraries(libCameraAPI PRIVATE
     #cameraMediaClientLibrary
     #cameraPresetClientLibrary
     #cameraTimelineClientLibrary
-    #cameraTransportClientLibrary
-    #cameraVideoClientLibrary
+    cameraTransportClientLibrary
+    cameraVideoClientLibrary
 )
 
-target_compile_definitions(libCameraAPI PRIVATE LIBCAMERAAPI_LIBRARY)
+target_compile_definitions(camera_api PRIVATE CAMERAAPI_LIBRARY)
 
