@@ -26,7 +26,14 @@ ApplicationWindow {
     Connections {
         target: caa.system
 
+        function onSystemCodecFormatGetFinished(summary) {
+            console.debug(summary)
+            console.debug("onSystemCodecFormatGetFinished:", summary.getCodecValue, summary.getContainerValue )
+        }
 
+        function onSystemCodecFormatGetErrorOccurred(type, error) {
+            console.debug("Error getting codec format", type, error)
+        }
     }
 
     HyperdeckApi {
@@ -37,15 +44,6 @@ ApplicationWindow {
         }
         onConnectionError: {
             console.debug("Error connecting")
-        }
-
-        function onSystemCodecFormatGetFinished(summary) {
-            console.debug(summary)
-            console.debug("onSystemCodecFormatGetFinished:", summary.getCodecValue, summary.getContainerValue )
-        }
-
-        function onSystemCodecFormatGetErrorOccurred(type, error) {
-            console.debug("Error getting codec format", type, error)
         }
     }
 
