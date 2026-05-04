@@ -18,9 +18,15 @@ ApplicationWindow {
         id: caa
 
         Component.onCompleted: {
-            setServer("192.168.0.234", "http");
+            setServer("192.168.0.141", "http");
             caa.open();
         }
+    }
+
+    Connections {
+        target: caa.system
+
+
     }
 
     HyperdeckApi {
@@ -31,6 +37,15 @@ ApplicationWindow {
         }
         onConnectionError: {
             console.debug("Error connecting")
+        }
+
+        function onSystemCodecFormatGetFinished(summary) {
+            console.debug(summary)
+            console.debug("onSystemCodecFormatGetFinished:", summary.getCodecValue, summary.getContainerValue )
+        }
+
+        function onSystemCodecFormatGetErrorOccurred(type, error) {
+            console.debug("Error getting codec format", type, error)
         }
     }
 
@@ -112,6 +127,14 @@ ApplicationWindow {
                 text: "NAS"
                 onClicked: {
                     hdd.nas.mediaNasBookmarksGet();
+                }
+            }
+            ToolSeparator {}
+            ToolButton {
+                text: "CamCodec"
+                onClicked: {
+                    console.debug("CamCodec")
+                    caa.system.systemCodecFormatGet()
                 }
             }
         }
