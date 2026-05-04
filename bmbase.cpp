@@ -91,9 +91,9 @@ void BMBase::onWsDisconnected()
 
 void BMBase::onWsTextMessageReceived(QString message)
 {
-    qDebug() << "WS" << message;
+    //qDebug() << "WS" << message;
     auto j=QJsonDocument::fromJson(message.toUtf8());
-    qDebug() << j;
+    //qDebug() << j;
 
     if (!j.isObject()) {
         qWarning("Not an object ?");
@@ -120,6 +120,8 @@ void BMBase::onWsTextMessageReceived(QString message)
         auto value=d.value("value");
 
         qDebug() << "Property" << prop << value;
+
+        emit propertyChanged(prop, value);
     }
 }
 

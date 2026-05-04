@@ -23,6 +23,7 @@ public:
 
 signals:
     void connectionError();
+    void propertyChanged(QString property, QJsonValue value);
 
 protected slots:
     void onWsConnected();
