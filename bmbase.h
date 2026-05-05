@@ -11,6 +11,11 @@
 class BMBase : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QQmlListProperty<QObject> endpoints READ endpoints)
+    Q_CLASSINFO("DefaultProperty", "endpoints")
+
+    Q_PROPERTY(QString hostname READ hostname WRITE setHostname NOTIFY hostnameChanged FINAL)
+
 public:
     explicit BMBase(QObject *parent = nullptr);
     ~BMBase();
@@ -21,9 +26,14 @@ public:
     Q_INVOKABLE void open();
     Q_INVOKABLE void close();
 
+    QString hostname() const;
+    void setHostname(const QString &newHostname);
+
 signals:
     void connectionError();
     void propertyChanged(QString property, QJsonValue value);
+
+    void hostnameChanged();
 
 protected slots:
     void onWsConnected();
@@ -33,7 +43,7 @@ protected slots:
 
 protected:
     QString m_hostname;
-    QString m_protocol;
+    QString m_protocol="http";
     QWebSocket m_ws;
 
     QList<QtOpenApiCommon::QOAIBaseApi *>m_oac;
@@ -41,6 +51,7 @@ protected:
     virtual void onSubscribeHandler(QJsonObject jso);
     virtual bool onPropertyChange(QString property, QJsonValue value);
     virtual void onListProperties(QJsonArray properties);
+    QQmlListProperty<QObject> endpoints();
 };
 
 #endif // BMBASE_H

@@ -36,6 +36,28 @@ BMBase::~BMBase()
     m_ws.close();
 }
 
+QQmlListProperty<QObject> BMBase::endpoints()
+{
+    return QQmlListProperty<QObject>(this, this, [](QQmlListProperty<QObject>* prop, QObject* obj) {
+                                         auto self = static_cast<BMBase*>(prop->data);
+
+                                         // Ensure ownership
+                                         obj->setParent(self);
+
+                                         // Inject shared dependency
+                                         if (auto sub = qobject_cast<QtOpenApiCommon::QOAIBaseApi*>(obj)) {
+                                             //sub->setServer(self->server());
+
+                                             qDebug() << "QOAIBaseApi child" << obj;
+                                             self->setApiServer(sub);
+
+                                             // Optional: keep it in sync if server object changes
+                                             //QObject::connect(self, &BMBase::serverChanged, sub, &BMBase::setServer);
+                                         }
+                                     },
+                                     nullptr, nullptr, nullptr);
+}
+
 void BMBase::setServer(QString hostname, QString protocol)
 {
     m_hostname=hostname;
@@ -124,9 +146,9 @@ void BMBase::onWsTextMessageReceived(QString message)
         auto prop=d.value("property").toString();
         auto value=d.value("value");
 
-       emit propertyChanged(prop, value);
+        emit propertyChanged(prop, value);
         if (!onPropertyChange(prop, value)) {
-           qDebug() << "Unhandled property" << prop << value;
+            qDebug() << "Unhandled property" << prop << value;
         }
 
         return;
@@ -155,4 +177,17 @@ bool BMBase::onPropertyChange(QString property, QJsonValue value)
 void BMBase::onListProperties(QJsonArray properties)
 {
     qDebug() << "onListProperties" << properties;
+}
+
+QString BMBase::hostname() const
+{
+    return m_hostname;
+}
+
+void BMBase::setHostname(const QString &newHostname)
+{
+    if (m_hostname == newHostname)
+        return;
+    m_hostname = newHostname;
+    emit hostnameChanged();
 }

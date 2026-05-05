@@ -20,7 +20,14 @@ ApplicationWindow {
         Component.onCompleted: {
             setServer("192.168.0.141", "http");
             caa.open();
+            system.systemFormatGet();
+
         }
+
+        CameraSystemApi {
+            id: _csa
+        }
+
     }
 
     CameraSystemApi {
