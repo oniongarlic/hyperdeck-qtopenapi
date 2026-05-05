@@ -88,6 +88,8 @@ qt_add_openapi_client(cameraVideoClientLibrary
 qt_add_library(camera_api STATIC)
 qt_add_qml_module(camera_api
     URI org.tal.camera
+    OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../org/tal/camera
+    IMPORT_PATH ${CMAKE_CURRENT_BINARY_DIR}/../org/tal/camera
     SOURCES cameraapi.h cameraapi.cpp camerasystemapi.h camerasystemapi.cpp
 )
 
