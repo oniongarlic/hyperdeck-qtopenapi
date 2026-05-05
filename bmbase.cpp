@@ -88,7 +88,6 @@ void BMBase::onWsDisconnected()
     qDebug("Websocket disconnected");
 }
 
-
 void BMBase::onWsTextMessageReceived(QString message)
 {
     //qDebug() << "WS" << message;
@@ -107,22 +106,33 @@ void BMBase::onWsTextMessageReceived(QString message)
         auto props=d.value("properties").toArray();
 
         m_ws.sendTextMessage(makeJsonArray("request", "subscribe", "properties", props));
+
+        onListProperties(props);
+
+        return;
     }
 
     if (a.toString()=="subscribe") {
         auto v=d.value("values").toObject();
 
         onSubscribeHandler(v);
+
+        return;
     }
 
     if (a.toString()=="propertyValueChanged") {
         auto prop=d.value("property").toString();
         auto value=d.value("value");
 
-        qDebug() << "Property" << prop << value;
+       emit propertyChanged(prop, value);
+        if (!onPropertyChange(prop, value)) {
+           qDebug() << "Unhandled property" << prop << value;
+        }
 
-        emit propertyChanged(prop, value);
-    }
+        return;
+    }    
+
+    qDebug() << "Unhandled WS message:" << a.toString() << j;
 }
 
 void BMBase::onWsErrorOccurred(QAbstractSocket::SocketError error)
@@ -134,5 +144,15 @@ void BMBase::onWsErrorOccurred(QAbstractSocket::SocketError error)
 
 void BMBase::onSubscribeHandler(QJsonObject jso)
 {
+    qDebug() << "onSubscribeHandler" << jso;
+}
 
+bool BMBase::onPropertyChange(QString property, QJsonValue value)
+{
+    return false;
+}
+
+void BMBase::onListProperties(QJsonArray properties)
+{
+    qDebug() << "onListProperties" << properties;
 }

@@ -23,12 +23,37 @@ ApplicationWindow {
         }
     }
 
+    CameraSystemApi {
+        id: csa
+
+        onSystemFormatGetFinished: {
+            console.debug("CSA: Error connecting")
+        }
+
+        function onSystemFormatGetErrorOccurred(type, error) {
+            console.debug("Error getting video format", type, error)
+        }
+
+        Component.onCompleted: {
+            setServer("192.168.0.141", "http");
+        }
+    }
+
     Connections {
         target: caa.system
 
         function onSystemCodecFormatGetFinished(summary) {
             console.debug(summary)
             console.debug("onSystemCodecFormatGetFinished:", summary.getCodecValue, summary.getContainerValue )
+        }
+
+        function onSystemFormatGetFinished(summary) {
+            console.debug(summary)
+            console.debug("onSystemFormatGetFinished:", summary.getNameValue)
+        }
+
+        function onSystemFormatGetErrorOccurred(type, error) {
+            console.debug("Error getting video format", type, error)
         }
 
         function onSystemCodecFormatGetErrorOccurred(type, error) {
@@ -131,9 +156,17 @@ ApplicationWindow {
             ToolButton {
                 text: "CamCodec"
                 onClicked: {
-                    console.debug("CamCodec")
-                    caa.system.systemCodecFormatGet()
+                    console.debug("CamVideo")
+                    caa.system.systemFormatGet()
                 }
+            }
+        }
+    }
+
+    footer: ToolBar {
+        RowLayout {
+            Label {
+                text: caa.timecode
             }
         }
     }

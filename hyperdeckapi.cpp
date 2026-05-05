@@ -29,6 +29,8 @@ HyperdeckApi::~HyperdeckApi()
 
 void HyperdeckApi::onSubscribeHandler(QJsonObject jso)
 {
+    qDebug() << "onSubscribeHandler" << jso;
+
     if (jso.contains("/system/product")) {
         auto o=jso.value("/system/product").toObject();
         m_device=o.value("deviceName").toString();

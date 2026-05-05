@@ -39,6 +39,8 @@ protected:
     QList<QtOpenApiCommon::QOAIBaseApi *>m_oac;
 
     virtual void onSubscribeHandler(QJsonObject jso);
+    virtual bool onPropertyChange(QString property, QJsonValue value);
+    virtual void onListProperties(QJsonArray properties);
 };
 
 #endif // BMBASE_H

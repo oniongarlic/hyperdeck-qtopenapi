@@ -88,7 +88,7 @@ qt_add_openapi_client(cameraVideoClientLibrary
 qt_add_library(camera_api STATIC)
 qt_add_qml_module(camera_api
     URI org.tal.camera
-    SOURCES cameraapi.h cameraapi.cpp
+    SOURCES cameraapi.h cameraapi.cpp camerasystemapi.h camerasystemapi.cpp
 )
 
 target_include_directories(camera_api INTERFACE bmbase)
