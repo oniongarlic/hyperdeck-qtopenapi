@@ -95,6 +95,8 @@ qt_add_qml_module(camera_api
     IMPORT_PATH ${CMAKE_CURRENT_BINARY_DIR}/../org/tal/camera
     SOURCES cameraapi.h cameraapi.cpp camerasystemapi.h camerasystemapi.cpp
     SOURCES cameralensapi.h cameralensapi.cpp
+    SOURCES cameravideoapi.h cameravideoapi.cpp
+    SOURCES cameratransportapi.h cameratransportapi.cpp
 )
 
 target_include_directories(camera_api INTERFACE bmbase)
