@@ -15,6 +15,7 @@
 #include "client/defaultcameravideoapi.h"
 
 #include "camerasystemapi.h"
+#include "cameralensapi.h"
 
 class CameraApi : public BMBase
 {

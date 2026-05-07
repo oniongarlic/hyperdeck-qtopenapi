@@ -43,11 +43,14 @@ qt_add_openapi_client(cameraEventClientLibrary
 #     OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/camera_cc_api/
 # )
 
-# qt_add_library(cameraLensClientLibrary)
-# qt_add_openapi_client(cameraLensClientLibrary
-#     SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/LensControl.yaml
-#     OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/camera_lens_api/
-# )
+qt_add_library(cameraLensClientLibrary)
+qt_add_openapi_client(cameraLensClientLibrary
+    SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/camera/LensControl.yaml
+    OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/camera_lens_api/
+    OUTPUT_PUBLIC_HEADERS_DIR ${CMAKE_CURRENT_BINARY_DIR}/camera_lens_api/
+    ADDITIONAL_PROPERTIES cppNamespace=BMCamera
+    GENERATE_OPTIONS --api-name-suffix CameraLensApi
+)
 
 # qt_add_library(cameraMediaClientLibrary)
 # qt_add_openapi_client(cameraMediaClientLibrary
@@ -91,6 +94,7 @@ qt_add_qml_module(camera_api
     OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../org/tal/camera
     IMPORT_PATH ${CMAKE_CURRENT_BINARY_DIR}/../org/tal/camera
     SOURCES cameraapi.h cameraapi.cpp camerasystemapi.h camerasystemapi.cpp
+    SOURCES cameralensapi.h cameralensapi.cpp
 )
 
 target_include_directories(camera_api INTERFACE bmbase)
@@ -102,7 +106,7 @@ target_link_libraries(camera_api PRIVATE
     cameraEventClientLibrary
     #cameraAudioClientLibrary
     #cameraCCClientLibrary
-    #cameraLensClientLibrary
+    cameraLensClientLibrary
     #cameraMediaClientLibrary
     #cameraPresetClientLibrary
     #cameraTimelineClientLibrary
