@@ -12,7 +12,7 @@ class CameraTransportApi : public BMCamera::DefaultCameraTransportApi
     Q_OBJECT
     QML_ELEMENT
 public:
-    CameraTransportApi(QObject *parent);
+    explicit CameraTransportApi(QObject *parent = nullptr);
 };
 
 #endif
