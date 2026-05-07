@@ -4,7 +4,17 @@ info:
   description: API for controlling media devices in Blackmagic Design products.
   version: 1.0.0
 servers:
-- url: /control/api/v1
+- url: '{protocol}://{hostname}/control/api/v1'
+  variables:
+    protocol:
+      enum:
+      - http
+      - https
+      default: http
+      description: Protocol
+    hostname:
+      default: hostname-or-ip
+      description: Device hostname
 paths:
   /media/workingset:
     get:
