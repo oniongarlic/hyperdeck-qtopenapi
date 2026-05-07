@@ -1,4 +1,8 @@
 #include "cameralensapi.h"
 
-CameraLensApi::CameraLensApi(QObject *parent) {}
+CameraLensApi::CameraLensApi(QObject *parent)
+    : BMCamera::DefaultCameraLensApi{parent}
+{
+
+}
 

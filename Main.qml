@@ -28,6 +28,14 @@ ApplicationWindow {
             id: _csa
         }
 
+        CameraLensApi {
+            id: cla
+
+            onLensFocusDoAutoFocusPutErrorOccurred: console.debug("Focus failed")
+
+            onLensFocusDoAutoFocusPutFinished: console.debug("Focused")
+        }
+
     }
 
     CameraSystemApi {
@@ -166,6 +174,10 @@ ApplicationWindow {
                     console.debug("CamVideo")
                     caa.system.systemFormatGet()
                 }
+            }
+            ToolButton {
+                text: "Focus"
+                onClicked: cla.lensFocusDoAutoFocusPut()
             }
         }
     }
