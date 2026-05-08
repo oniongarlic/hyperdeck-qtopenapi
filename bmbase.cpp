@@ -40,18 +40,12 @@ QQmlListProperty<QObject> BMBase::endpoints()
 {
     return QQmlListProperty<QObject>(this, this, [](QQmlListProperty<QObject>* prop, QObject* obj) {
                                          auto self = static_cast<BMBase*>(prop->data);
-
-                                         // Ensure ownership
                                          obj->setParent(self);
 
-                                         // Inject shared dependency
                                          if (auto sub = qobject_cast<QtOpenApiCommon::QOAIBaseApi*>(obj)) {
-                                             //sub->setServer(self->server());
-
-                                             qDebug() << "QOAIBaseApi child" << obj;
+                                             qDebug() << "OAPI" << self->m_hostname << self->m_protocol << obj << sub->operations();
                                              self->setApiServer(sub);
 
-                                             // Optional: keep it in sync if server object changes
                                              //QObject::connect(self, &BMBase::serverChanged, sub, &BMBase::setServer);
                                          }
                                      },

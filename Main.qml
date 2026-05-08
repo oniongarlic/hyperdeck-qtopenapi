@@ -16,64 +16,65 @@ ApplicationWindow {
 
     CameraApi {
         id: caa
+        hostname: "192.168.0.141"
 
-        Component.onCompleted: {
-            setServer("192.168.0.141", "http");
+        Component.onCompleted: {            
             caa.open();
-            system.systemFormatGet();
-
+            csa.systemGet();
+            csa.systemFormatGet();
         }
 
         CameraSystemApi {
-            id: _csa
+            id: csa
+
+            onSystemFormatGetErrorOccurred: (type, error) => {
+                console.debug("Error getting video format", type, error)
+            }
+
+            onSystemCodecFormatGetFinished: (summary) => {
+                console.debug(summary)
+                console.debug("onSystemCodecFormatGetFinished:", summary.getCodecValue, summary.getContainerValue )
+            }
+
+            onSystemFormatGetFinished: (summary) => {
+                console.debug(summary)
+                console.debug("onSystemFormatGetFinished:", summary.getNameValue)
+            }
+
+            onSystemCodecFormatGetErrorOccurred: (type, error) => {
+                console.debug("Error getting codec format", type, error)
+            }
+
         }
 
         CameraLensApi {
             id: cla
 
-            onLensFocusDoAutoFocusPutErrorOccurred: console.debug("Focus failed")
+            onLensFocusDoAutoFocusPutErrorOccurred: (type, error) => { console.debug("Focus failed", type, error) }
+            onLensFocusDoAutoFocusPutFinished: () => {
+                console.debug("Focused")
+                cla.lensFocusGet()
+            }
 
-            onLensFocusDoAutoFocusPutFinished: console.debug("Focused")
+            onLensFocusGetFinished: (f) => {
+                console.debug("Focus:", f.getFocusValue)
+            }
+
+            onLensZoomGetFinished: (z) => {
+                console.debug("Zoom:", z.getNormalisedValue)
+            }
         }
 
-    }
+        CameraTransportApi {
+            id: cta
 
-    CameraSystemApi {
-        id: csa
-
-        onSystemFormatGetFinished: {
-            console.debug("CSA: Error connecting")
         }
 
-        function onSystemFormatGetErrorOccurred(type, error) {
-            console.debug("Error getting video format", type, error)
+        CameraVideoApi {
+            id: cva
+
         }
 
-        Component.onCompleted: {
-            setServer("192.168.0.141", "http");
-        }
-    }
-
-    Connections {
-        target: caa.system
-
-        function onSystemCodecFormatGetFinished(summary) {
-            console.debug(summary)
-            console.debug("onSystemCodecFormatGetFinished:", summary.getCodecValue, summary.getContainerValue )
-        }
-
-        function onSystemFormatGetFinished(summary) {
-            console.debug(summary)
-            console.debug("onSystemFormatGetFinished:", summary.getNameValue)
-        }
-
-        function onSystemFormatGetErrorOccurred(type, error) {
-            console.debug("Error getting video format", type, error)
-        }
-
-        function onSystemCodecFormatGetErrorOccurred(type, error) {
-            console.debug("Error getting codec format", type, error)
-        }
     }
 
     HyperdeckApi {
@@ -178,6 +179,10 @@ ApplicationWindow {
             ToolButton {
                 text: "Focus"
                 onClicked: cla.lensFocusDoAutoFocusPut()
+            }
+            ToolButton {
+                text: "Zoom"
+                onClicked: cla.lensZoomGet()
             }
         }
     }
