@@ -3,11 +3,7 @@
 CameraApi::CameraApi(QObject *parent)
     : BMBase{parent}
 {
-    m_oac.append(&system);
-    m_oac.append(&event);
 
-    m_oac.append(&transport);
-    m_oac.append(&video);
 }
 
 void CameraApi::setTimecode(long tc)
@@ -24,6 +20,8 @@ bool CameraApi::onPropertyChange(QString property, QJsonValue value)
         setTimecode(value.toObject().value("timecode").toInteger());
         return true;
     }
+
+    emit propertyChange(property, value);
 
     return false;
 }

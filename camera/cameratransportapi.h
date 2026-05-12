@@ -13,6 +13,9 @@ class CameraTransportApi : public BMCamera::DefaultCameraTransportApi
     QML_ELEMENT
 public:
     explicit CameraTransportApi(QObject *parent = nullptr);
+
+protected slots:
+    void onPropertyChange(QString property, QJsonValue value);
 };
 
 #endif
