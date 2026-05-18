@@ -13,7 +13,7 @@ find_package(Qt6 REQUIRED COMPONENTS OpenApiCommon OpenApiTools)
 
 qt_add_library(hyperdeckClientLibrary)
 qt_add_openapi_client(hyperdeckClientLibrary
-    SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/HyperDeckRESTControl.yaml
+    SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/hyperdeck/HyperDeckRESTControl.yaml
     OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/hyperdeck_api/
     OUTPUT_PUBLIC_HEADERS_DIR ${CMAKE_CURRENT_BINARY_DIR}/hyperdeck_api/
     ADDITIONAL_PROPERTIES cppNamespace=BMHyperdeck
