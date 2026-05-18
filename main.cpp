@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
 
     app.setOrganizationName("TalOrg");
     app.setOrganizationDomain("tal.org");
-    app.setApplicationName("HyperDeckAPITest");
+    app.setApplicationName("CuteBMOAPI");
 
     QQmlApplicationEngine engine;
 

@@ -1,0 +1,14 @@
+BMHyperdeck::SystemHyperdeckApi HyperdeckSystem
+BMHyperdeck::TransportHyperdeckApi HyperdeckTransport
+BMHyperdeck::TimelineHyperdeckApi HyperdeckTimeline
+BMHyperdeck::MediaHyperdeckApi HyperdeckMedia
+BMHyperdeck::AudioHyperdeckApi HyperdeckAudio
+BMHyperdeck::ClipsHyperdeckApi HyperdeckClips
+BMHyperdeck::EventHyperdeckApi HyperdeckEvent
+BMHyperdeck::ExternalMediaHyperdeckApi HyperdeckExternalMedia
+BMHyperdeck::InputHyperdeckApi HyperdeckInput
+BMHyperdeck::MonitoringHyperdeckApi HyperdeckMonitoring
+BMHyperdeck::NASHyperdeckApi HyperdeckNAS
+BMHyperdeck::PlayRangeHyperdeckApi HyperdeckPlayRange
+BMHyperdeck::RecordCacheHyperdeckApi HyperdeckRecordCache
+BMHyperdeck::SpillHyperdeckApi HyperdeckSpill

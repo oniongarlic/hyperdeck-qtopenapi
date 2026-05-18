@@ -18,7 +18,7 @@ ApplicationWindow {
         id: caa
         hostname: "192.168.0.141"
 
-        Component.onCompleted: {            
+        Component.onCompleted: {
             caa.open();
             csa.systemGet();
             csa.systemFormatGet();
@@ -28,22 +28,22 @@ ApplicationWindow {
             id: csa
 
             onSystemFormatGetErrorOccurred: (type, error) => {
-                console.debug("Error getting video format", type, error)
-            }
+                                                console.debug("Error getting video format", type, error)
+                                            }
 
             onSystemCodecFormatGetFinished: (summary) => {
-                console.debug(summary)
-                console.debug("onSystemCodecFormatGetFinished:", summary.getCodecValue, summary.getContainerValue )
-            }
+                                                console.debug(summary)
+                                                console.debug("onSystemCodecFormatGetFinished:", summary.getCodecValue, summary.getContainerValue )
+                                            }
 
             onSystemFormatGetFinished: (summary) => {
-                console.debug(summary)
-                console.debug("onSystemFormatGetFinished:", summary.getNameValue)
-            }
+                                           console.debug(summary)
+                                           console.debug("onSystemFormatGetFinished:", summary.getNameValue)
+                                       }
 
             onSystemCodecFormatGetErrorOccurred: (type, error) => {
-                console.debug("Error getting codec format", type, error)
-            }
+                                                     console.debug("Error getting codec format", type, error)
+                                                 }
 
         }
 
@@ -52,17 +52,17 @@ ApplicationWindow {
 
             onLensFocusDoAutoFocusPutErrorOccurred: (type, error) => { console.debug("Focus failed", type, error) }
             onLensFocusDoAutoFocusPutFinished: () => {
-                console.debug("Focused")
-                cla.lensFocusGet()
-            }
+                                                   console.debug("Focused")
+                                                   cla.lensFocusGet()
+                                               }
 
             onLensFocusGetFinished: (f) => {
-                console.debug("Focus:", f.getFocusValue)
-            }
+                                        console.debug("Focus:", f.getFocusValue)
+                                    }
 
             onLensZoomGetFinished: (z) => {
-                console.debug("Zoom:", z.getNormalisedValue)
-            }
+                                       console.debug("Zoom:", z.getNormalisedValue)
+                                   }
         }
 
         CameraTransportApi {
@@ -79,59 +79,65 @@ ApplicationWindow {
 
     HyperdeckApi {
         id: hdd
-        Component.onCompleted: {
-            setServer("192.168.0.233", "http");
-            hdd.open();            
+        hostname: "192.168.0.233"
+        Component.onCompleted: {            
+            hdd.open();
         }
         onConnectionError: {
             console.debug("Error connecting")
         }
-    }
 
-    Connections {
-        target: hdd.system
+        HyperdeckSystem {
+            id: hdSystem
 
-        function onSystemCodecFormatGetFinished(summary) {
-            console.debug(summary)
-            console.debug("onSystemCodecFormatGetFinished:", summary.getCodecValue, summary.getContainerValue )
+            function onSystemCodecFormatGetFinished(summary) {
+                console.debug(summary)
+                console.debug("onSystemCodecFormatGetFinished:", summary.getCodecValue, summary.getContainerValue )
+            }
+
+            function onSystemCodecFormatGetErrorOccurred(type, error) {
+                console.debug("Error getting codec format",type,error)
+            }
+
+            function onSystemUptimeGetFinished(summary) {
+                console.debug("systemUptimeGetFinished", summary.getUptimeSecondsValue)
+            }
+
+            function onSystemSupportedCodecFormatsGetFinished(summary) {
+                console.debug("onSystemSupportedCodecFormatsGetFinished")
+                var c=summary.getCodecsValue;
+                console.debug(c, c.length)
+            }
+            function onSystemSupportedCodecFormatsGetErrorOccurred(type, error) {
+                console.debug("Error getting codec format",type,error)
+            }
+
         }
 
-        function onSystemCodecFormatGetErrorOccurred(type, error) {
-            console.debug("Error getting codec format",type,error)
+        HyperdeckTransport {
+            id: hdTransport
+
+            function onTransports0RecordPostFinished() {
+                console.debug("Recording...")
+            }
+
+            function onTransports0RecordPostErrorOccurred(e,s) {
+                console.debug("Recording failed", e, s)
+            }
+
+            function onTransports0StopGetFinished(s) {
+                console.debug("Stopped:", s)
+            }
+
+            function onTransports0StopPostFinished() {
+                console.debug("Stopped")
+            }
         }
 
-        function onSystemUptimeGetFinished(summary) {
-            console.debug("systemUptimeGetFinished", summary.getUptimeSecondsValue)
+        HyperdeckNAS {
+            id: hdNas
         }
 
-        function onSystemSupportedCodecFormatsGetFinished(summary) {
-            console.debug("onSystemSupportedCodecFormatsGetFinished")
-            var c=summary.getCodecsValue;
-            console.debug(c, c.length)
-        }
-        function onSystemSupportedCodecFormatsGetErrorOccurred(type, error) {
-            console.debug("Error getting codec format",type,error)
-        }
-    }
-
-    Connections {
-        target: hdd.transport
-
-        function onTransports0RecordPostFinished() {
-            console.debug("Recording...")
-        }
-
-        function onTransports0RecordPostErrorOccurred(e,s) {
-            console.debug("Recording failed", e, s)
-        }
-
-        function onTransports0StopGetFinished(s) {
-            console.debug("Stopped:", s)
-        }
-
-        function onTransports0StopPostFinished() {
-            console.debug("Stopped")
-        }
     }
 
     header: ToolBar {
@@ -140,32 +146,32 @@ ApplicationWindow {
                 text: "Codec"
                 onClicked: {
                     console.debug("Codec")
-                    hdd.system.systemCodecFormatGet()
+                    hdSystem.systemCodecFormatGet()
                 }
             }
             ToolButton {
                 text: "Codecs"
                 onClicked: {
-                    hdd.system.systemSupportedCodecFormatsGet()
+                    hdSystem.systemSupportedCodecFormatsGet()
                 }
             }
             ToolButton {
                 text: "Uptime"
                 onClicked: {
                     console.debug("Uptime")
-                    hdd.system.systemUptimeGet();
+                    hdSystem.systemUptimeGet();
                 }
             }
             ToolButton {
                 text: "Get Stop"
                 onClicked: {
-                    hdd.transport.transports0StopGet();
+                    hdTransport.transports0StopGet();
                 }
             }
             ToolButton {
                 text: "NAS"
                 onClicked: {
-                    hdd.nas.mediaNasBookmarksGet();
+                    hdNas.mediaNasBookmarksGet();
                 }
             }
             ToolSeparator {}
@@ -173,7 +179,7 @@ ApplicationWindow {
                 text: "CamCodec"
                 onClicked: {
                     console.debug("CamVideo")
-                    caa.system.systemFormatGet()
+                    csa.systemFormatGet()
                 }
             }
             ToolButton {
@@ -235,7 +241,7 @@ ApplicationWindow {
                     required property string durationTimecode;
                     required property int frameCount;
                     width: ListView.width
-                    text: clipUniqueId+" - "+durationTimecode+" ("+frameCount+")"                                    
+                    text: clipUniqueId+" - "+durationTimecode+" ("+frameCount+")"
                 }
 
                 onCountChanged: console.debug("model:", count)

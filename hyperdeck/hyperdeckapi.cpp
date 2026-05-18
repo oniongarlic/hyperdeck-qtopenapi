@@ -6,20 +6,7 @@
 HyperdeckApi::HyperdeckApi(QObject *parent)
     : BMBase{parent}
 {
-    m_oac.append(&system);
-    m_oac.append(&transport);
-    m_oac.append(&timeline);
-    m_oac.append(&media);
-    m_oac.append(&audio);
-    m_oac.append(&clips);
-    m_oac.append(&event);
-    m_oac.append(&externalmedia);
-    m_oac.append(&input);
-    m_oac.append(&monitoring);
-    m_oac.append(&nas);
-    m_oac.append(&playrange);
-    m_oac.append(&recordcache);
-    m_oac.append(&spill);
+
 }
 
 HyperdeckApi::~HyperdeckApi()
@@ -29,7 +16,7 @@ HyperdeckApi::~HyperdeckApi()
 
 void HyperdeckApi::onSubscribeHandler(QJsonObject jso)
 {
-    qDebug() << "onSubscribeHandler" << jso;
+    qDebug() << "Hyperdeck: onSubscribeHandler" << jso;
 
     if (jso.contains("/system/product")) {
         auto o=jso.value("/system/product").toObject();

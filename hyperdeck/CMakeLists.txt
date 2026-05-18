@@ -23,7 +23,11 @@ qt_add_openapi_client(hyperdeckClientLibrary
 qt_add_library(hyperdeck_api STATIC)
 qt_add_qml_module(hyperdeck_api
     URI org.tal.hyperdeck
+    OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../org/tal/hyperdeck
+    IMPORT_PATH ${CMAKE_CURRENT_BINARY_DIR}/../org/tal/hyperdeck
     SOURCES hyperdeckapi.h hyperdeckapi.cpp clipmodel.h clipmodel.cpp
+    hyperdeckaudio.h hyperdeckclips.h hyperdeckevent.h hyperdeckexternalmedia.h hyperdeckinput.h hyperdeckmedia.h hyperdeckmonitoring.h hyperdecknas.h hyperdeckplayrange.h hyperdeckrecordcache.h hyperdeckspill.h hyperdecksystem.h hyperdecktimeline.h hyperdecktransport.h
+    hyperdeckaudio.cpp hyperdeckclips.cpp hyperdeckevent.cpp hyperdeckexternalmedia.cpp hyperdeckinput.cpp hyperdeckmedia.cpp hyperdeckmonitoring.cpp hyperdecknas.cpp hyperdeckplayrange.cpp hyperdeckrecordcache.cpp hyperdeckspill.cpp hyperdecksystem.cpp hyperdecktimeline.cpp hyperdecktransport.cpp
 )
 target_include_directories(hyperdeck_api
     PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/hyperdeck/hyperdeck_api/client
@@ -36,3 +40,4 @@ target_link_libraries(hyperdeck_api
     hyperdeckClientLibrary
     bmbase
     )
+target_compile_definitions(hyperdeck_api PRIVATE HYPERDECKAPI_LIBRARY)
