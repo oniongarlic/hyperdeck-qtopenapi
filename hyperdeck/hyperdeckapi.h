@@ -24,7 +24,7 @@
 #include "timelinehyperdeckapi.h"
 #include "transporthyperdeckapi.h"
 
-#include "bmbase.h"
+#include "../bmbase.h"
 
 #include "clipmodel.h"
 

@@ -19,3 +19,20 @@ qt_add_openapi_client(hyperdeckClientLibrary
     ADDITIONAL_PROPERTIES cppNamespace=BMHyperdeck
     GENERATE_OPTIONS --api-name-suffix HyperdeckApi
 )
+
+qt_add_library(hyperdeck_api STATIC)
+qt_add_qml_module(hyperdeck_api
+    URI org.tal.hyperdeck
+    SOURCES hyperdeckapi.h hyperdeckapi.cpp clipmodel.h clipmodel.cpp
+)
+target_include_directories(hyperdeck_api
+    PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/hyperdeck/hyperdeck_api/client
+    Qt6::OpenApiCommon
+    bmbase
+    )
+
+target_link_libraries(hyperdeck_api
+    PRIVATE Qt6::Quick Qt6::WebSockets Qt6::OpenApiCommon
+    hyperdeckClientLibrary
+    bmbase
+    )
