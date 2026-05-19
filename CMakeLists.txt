@@ -46,6 +46,7 @@ target_link_libraries(cutebmoapi PRIVATE
     Qt6::Quick Qt6::WebSockets
     hyperdeck_apiplugin
     camera_apiplugin
+    webpresenter_apiplugin
     )
 
 install(TARGETS cutebmoapi

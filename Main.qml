@@ -5,8 +5,8 @@ import QtQuick.Controls
 import QtQuick.Layouts
 
 import org.tal.hyperdeck
-
 import org.tal.camera
+import org.tal.webpresenter
 
 ApplicationWindow {
     width: 800
@@ -138,6 +138,17 @@ ApplicationWindow {
             id: hdNas
         }
 
+    }
+
+    WebpresenterApi {
+        id: wpa
+        hostname: "192.168.0.234"
+        Component.onCompleted: {
+            wpa.open();
+        }
+        onConnectionError: {
+            console.debug("Error connecting")
+        }
     }
 
     header: ToolBar {
