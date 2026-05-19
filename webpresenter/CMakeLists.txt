@@ -46,6 +46,8 @@ qt_add_qml_module(webpresenter_api
     OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../org/tal/webpresenter
     IMPORT_PATH ${CMAKE_CURRENT_BINARY_DIR}/../org/tal/webpresenter
     SOURCES webpresenterapi.h webpresenterapi.cpp
+    SOURCES webpresenterevent.cpp webpresenterevent.h
+    SOURCES webpresentersystem.cpp webpresentersystem.h
 )
 
 target_include_directories(webpresenter_api INTERFACE ${CMAKE_CURRENT_BINARY_DIR})
@@ -53,6 +55,7 @@ target_include_directories(webpresenter_api INTERFACE ${CMAKE_CURRENT_BINARY_DIR
 target_link_libraries(webpresenter_api PRIVATE
     Qt6::Quick Qt6::WebSockets
     webpresenterSystemClientLibrary
+    webpresenterEventClientLibrary
 )
 
 target_compile_definitions(webpresenter_api PRIVATE WEBPRESENTER_LIBRARY)
