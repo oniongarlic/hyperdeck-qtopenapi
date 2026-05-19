@@ -149,6 +149,10 @@ ApplicationWindow {
         onConnectionError: {
             console.debug("Error connecting")
         }
+
+        WebpresenterSystem {
+            id: wps
+        }
     }
 
     header: ToolBar {
