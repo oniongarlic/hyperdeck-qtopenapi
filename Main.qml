@@ -223,19 +223,19 @@ ApplicationWindow {
         Button {
             text: "Play"
             onClicked: {
-                hdd.transport.transports0PlayPost();
+                hdTransport.transports0PlayPost();
             }
         }
         Button {
             text: "Record"
             onClicked: {
-                hdd.transport.transports0RecordPost();
+                hdTransport.transports0RecordPost();
             }
         }
         Button {
             text: "Stop"
             onClicked: {
-                hdd.transport.transports0StopPost();
+                hdTransport.transports0StopPost();
             }
         }
 
