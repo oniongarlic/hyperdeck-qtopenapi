@@ -1,5 +1,4 @@
-#ifndef HYPERDECKAPI_H
-#define HYPERDECKAPI_H
+#pragma once
 
 #include <QObject>
 #include <QQmlEngine>
@@ -31,4 +30,4 @@ private:
     ClipModel m_clip_model;
 };
 
-#endif // HYPERDECKAPI_H
+

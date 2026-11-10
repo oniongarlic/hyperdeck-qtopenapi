@@ -1,5 +1,4 @@
-#ifndef CAMERAAPI_H
-#define CAMERAAPI_H
+#pragma once
 
 #include <QObject>
 #include <QQmlEngine>
@@ -32,4 +31,4 @@ protected:
     bool onPropertyChange(QString property, QJsonValue value);
 };
 
-#endif // CAMERAAPI_H
+#pragma once

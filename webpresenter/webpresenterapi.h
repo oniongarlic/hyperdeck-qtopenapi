@@ -1,5 +1,4 @@
-#ifndef WEBPRESENTERAPI_H
-#define WEBPRESENTERAPI_H
+#pragma once
 
 #include <QObject>
 #include <QQmlEngine>
@@ -25,5 +24,3 @@ private:
     QString m_product;
     QString m_version;
 };
-
-#endif

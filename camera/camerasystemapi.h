@@ -1,5 +1,4 @@
-#ifndef CAMERASYSTEMAPI_H
-#define CAMERASYSTEMAPI_H
+#pragma once
 
 #include <QObject>
 #include <QQmlEngine>
@@ -22,4 +21,3 @@ public:
 signals:
 };
 
-#endif // CAMERASYSTEMAPI_H

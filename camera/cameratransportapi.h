@@ -1,5 +1,4 @@
-#ifndef DEFAULTCAMERATRANSPORTAPI_H
-#define DEFAULTCAMERATRANSPORTAPI_H
+#pragma once
 
 #include <QObject>
 #include <QQmlEngine>
@@ -18,4 +17,3 @@ protected slots:
     void onPropertyChange(QString property, QJsonValue value);
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef CLIPMODEL_H
-#define CLIPMODEL_H
+#pragma once
 
 #include <QObject>
 #include <qqmlintegration.h>
@@ -39,5 +38,3 @@ public:
 private:
     QVariantList m_items;
 };
-
-#endif // CLIPMODEL_H
