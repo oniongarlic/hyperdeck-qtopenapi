@@ -32,8 +32,8 @@ public:
 signals:
     void connectionError();
     void propertyChanged(QString property, QJsonValue value);
-
     void hostnameChanged();
+    void responseError(QString message);
 
 protected slots:
     void onWsConnected();
