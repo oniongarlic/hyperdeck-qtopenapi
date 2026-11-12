@@ -21,6 +21,7 @@ public:
 
 protected:    
     void onSubscribeHandler(QJsonObject jso);
+    bool onPropertyChange(QString property, QJsonValue value);
 
 private:
     QString m_device;

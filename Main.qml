@@ -63,16 +63,23 @@ ApplicationWindow {
             onLensZoomGetFinished: (z) => {
                                        console.debug("Zoom:", z.getNormalisedValue)
                                    }
+            onLensIrisGetFinished: (z) => {
+                                       console.debug("Iris:", z.getNormalisedValue)
+                                   }
         }
 
         CameraTransportApi {
             id: cta
+
+            onTransports0RecordPutFinished: console.debug("Record")
+            onTransports0RecordPutErrorOccurred: console.debug("Record error")
 
         }
 
         CameraVideoApi {
             id: cva
 
+            onVideoIsoGetFinished: (z) => { console.debug("ISO", z.getIsoValue) }
         }
 
     }
@@ -80,7 +87,7 @@ ApplicationWindow {
     HyperdeckApi {
         id: hdd
         hostname: "192.168.0.233"
-        Component.onCompleted: {            
+        Component.onCompleted: {
             hdd.open();
         }
         onConnectionError: {
@@ -197,14 +204,6 @@ ApplicationWindow {
                     csa.systemFormatGet()
                 }
             }
-            ToolButton {
-                text: "Focus"
-                onClicked: cla.lensFocusDoAutoFocusPut()
-            }
-            ToolButton {
-                text: "Zoom"
-                onClicked: cla.lensZoomGet()
-            }
         }
     }
 
@@ -216,55 +215,96 @@ ApplicationWindow {
         }
     }
 
-    ColumnLayout {
+    RowLayout {
         anchors.fill: parent
         anchors.margins: 16
         spacing: 16
-        Button {
-            text: "Play"
-            onClicked: {
-                hdTransport.transports0PlayPost();
+
+        ColumnLayout {
+            spacing: 8
+            Button {
+                text: "AutoFocus"
+                onClicked: cla.lensFocusDoAutoFocusPut();
             }
-        }
-        Button {
-            text: "Record"
-            onClicked: {
-                hdTransport.transports0RecordPost();
+            Button {
+                text: "Get Focus"
+                onClicked: cla.lensFocusGet();
             }
-        }
-        Button {
-            text: "Stop"
-            onClicked: {
-                hdTransport.transports0StopPost();
+
+            Button {
+                text: "Get Zoom"
+                onClicked: cla.lensZoomGet()
+            }
+            Button {
+                text: "Get Iris"
+                onClicked: cla.lensIrisGet()
+            }
+            Button {
+                text: "Get ISO"
+                onClicked: cva.videoIsoGet()
+            }
+            Button {
+                text: "ISO 400"
+                onClicked: cva.setIso(400)
+            }
+            Button {
+                text: "ISO 500"
+                onClicked: cva.setIso(500)
+            }
+
+            Button {
+                text: "Record"
+                onClicked: cta.transports0RecordPut()
             }
         }
 
         ColumnLayout {
-            Layout.fillHeight: true
-            Layout.fillWidth: true
-            ListView {
-                id: clipsList
+            spacing: 8
+            Button {
+                text: "Play"
+                onClicked: {
+                    hdTransport.transports0PlayPost();
+                }
+            }
+            Button {
+                text: "Record"
+                onClicked: {
+                    hdTransport.transports0RecordPost();
+                }
+            }
+            Button {
+                text: "Stop"
+                onClicked: {
+                    hdTransport.transports0StopPost();
+                }
+            }
 
+            ColumnLayout {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
+                ListView {
+                    id: clipsList
 
-                model: hdd.getClipsModel()
-                clip: true
+                    Layout.fillHeight: true
+                    Layout.fillWidth: true
 
-                delegate: ItemDelegate {
-                    required property int clipUniqueId;
-                    required property string durationTimecode;
-                    required property int frameCount;
-                    width: ListView.width
-                    text: clipUniqueId+" - "+durationTimecode+" ("+frameCount+")"
+                    model: hdd.getClipsModel()
+                    clip: true
+
+                    delegate: ItemDelegate {
+                        required property int clipUniqueId;
+                        required property string durationTimecode;
+                        required property int frameCount;
+                        width: ListView.width
+                        text: clipUniqueId+" - "+durationTimecode+" ("+frameCount+")"
+                    }
+
+                    onCountChanged: console.debug("model:", count)
+
+                    ScrollIndicator.vertical: ScrollIndicator { }
                 }
-
-                onCountChanged: console.debug("model:", count)
-
-                ScrollIndicator.vertical: ScrollIndicator { }
             }
         }
-
     }
 
 }

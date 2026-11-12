@@ -94,21 +94,19 @@ void BMBase::close()
 
 void BMBase::onWsConnected()
 {
-    qDebug("Websocket connected!");
+    qDebug() << "Websocket connected!" << m_hostname;
     connect(&m_ws, &QWebSocket::textMessageReceived, this, &BMBase::onWsTextMessageReceived);
     m_ws.sendTextMessage(makeJson("request", "listProperties"));
 }
 
 void BMBase::onWsDisconnected()
 {
-    qDebug("Websocket disconnected");
+    qDebug() << "Websocket disconnected" << m_hostname;
 }
 
 void BMBase::onWsTextMessageReceived(QString message)
-{
-    //qDebug() << "WS" << message;
-    auto j=QJsonDocument::fromJson(message.toUtf8());
-    //qDebug() << j;
+{    
+    auto j=QJsonDocument::fromJson(message.toUtf8());    
 
     if (!j.isObject()) {
         qWarning("Not an object ?");
@@ -118,6 +116,8 @@ void BMBase::onWsTextMessageReceived(QString message)
 
     auto d=j.object().value("data").toObject();
     auto a=d.value("action");
+    auto t=j.object().value("type").toString();
+
     if (a.toString()=="listProperties") {
         auto props=d.value("properties").toArray();
 
@@ -140,13 +140,28 @@ void BMBase::onWsTextMessageReceived(QString message)
         auto prop=d.value("property").toString();
         auto value=d.value("value");
 
-        emit propertyChanged(prop, value);
-        if (!onPropertyChange(prop, value)) {
-            qDebug() << "Unhandled property" << prop << value;
+        if (onPropertyChange(prop, value)==false) {
+            qDebug() << "Unhandled property" << prop << value << value.isObject() << value.isArray() << value.isString() << value.isBool();
+
+            emit propertyChanged(prop, value);
         }
 
         return;
-    }    
+    }
+
+    if (a.toString()=="websocketOpened") {
+        qDebug("websocketOpened");
+        return;
+    }
+
+    if (t=="response") {
+        if (d.contains("errorMessage")) {
+            auto er=d.value("errorMessage").toString();
+            qDebug() << "Error:" << er;
+            emit responseError(er);
+            return;
+        }
+    }
 
     qDebug() << "Unhandled WS message:" << a.toString() << j;
 }
@@ -165,6 +180,8 @@ void BMBase::onSubscribeHandler(QJsonObject jso)
 
 bool BMBase::onPropertyChange(QString property, QJsonValue value)
 {
+    qDebug() << "onPropertyChange" << property << value;
+
     return false;
 }
 

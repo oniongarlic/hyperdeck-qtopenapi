@@ -36,3 +36,20 @@ void HyperdeckApi::onSubscribeHandler(QJsonObject jso)
     }
 }
 
+bool HyperdeckApi::onPropertyChange(QString property, QJsonValue value)
+{
+    // "/transports/0/timecode" QJsonValue(object, QJsonObject({"display":"13:20:58:16","timeline":"00:13:44:06"}))
+    if (property=="/transports/0/timecode" && value.isObject()) {
+        auto sdisplay=value.toObject().value("display").toString();
+        auto stimeline=value.toObject().value("timeline").toString();
+        auto display=QTime::fromString(sdisplay, "hh:mm:ss:zz");
+        auto timeline=QTime::fromString(stimeline, "hh:mm:ss:zz");
+        qDebug() << "CameraAPI: " << value.toObject() << display << timeline << sdisplay << stimeline;
+        return true;
+    }
+
+    qDebug("*** HyperdeckAPI onPropertyChange not handled");
+
+    return false;
+}
+

@@ -29,3 +29,10 @@ void WebpresenterApi::onSubscribeHandler(QJsonObject jso)
     }
 }
 
+bool WebpresenterApi::onPropertyChange(QString property, QJsonValue value)
+{
+    qDebug("*** WebpresenterAPI onPropertyChange not handled");
+
+    return false;
+}
+

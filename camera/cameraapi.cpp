@@ -21,7 +21,7 @@ bool CameraApi::onPropertyChange(QString property, QJsonValue value)
         return true;
     }
 
-    emit propertyChange(property, value);
+    qDebug("*** CameraAPI onPropertyChange not handled");
 
     return false;
 }
