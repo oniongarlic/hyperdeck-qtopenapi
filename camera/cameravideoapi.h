@@ -11,5 +11,7 @@ class CameraVideoApi : public BMCamera::DefaultCameraVideoApi
     QML_ELEMENT
 public:
     explicit CameraVideoApi(QObject *parent = nullptr);
+
+    Q_INVOKABLE void setIso(uint iso);
 };
 
