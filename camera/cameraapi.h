@@ -30,5 +30,3 @@ protected:
     long m_timecode;
     bool onPropertyChange(QString property, QJsonValue value);
 };
-
-#pragma once
