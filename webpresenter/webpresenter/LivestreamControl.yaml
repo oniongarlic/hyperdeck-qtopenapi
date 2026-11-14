@@ -173,7 +173,7 @@ paths:
           content:
             application/xml: 
               schema:
-                $ref: '#/components/schemas/streaming'
+                type: string
         404:
           description: Not Found
     put:
@@ -193,7 +193,7 @@ paths:
         content:
             application/xml: 
               schema:
-                $ref: '#/components/schemas/streaming'
+                type: string
       responses:
         204:
           description: No Content
