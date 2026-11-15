@@ -40,6 +40,8 @@ bool WebpresenterApi::onPropertyChange(QString property, QJsonValue value)
         m_bitrate=value.toObject().value("bitrate").toInteger(0);
         m_cache=value.toObject().value("cache").toInteger(0);
 
+        emit bitrateChanged();
+
         m_videoformat=value.toObject().value("effectiveVideoFormat").toString();
         m_status=value.toObject().value("status").toString();
 

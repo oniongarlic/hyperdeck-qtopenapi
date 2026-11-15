@@ -12,6 +12,8 @@ class WebpresenterApi : public BMBase
     Q_OBJECT
     QML_ELEMENT
 
+    Q_PROPERTY(uint64_t bitrate READ getBitrate NOTIFY bitrateChanged FINAL)
+
 public:
     explicit WebpresenterApi(QObject *parent = nullptr);
     ~WebpresenterApi();
@@ -29,6 +31,7 @@ public:
 signals:
     void productInformation();
     void streamInfo();
+    void bitrateChanged();
 
 protected:
     void onSubscribeHandler(QJsonObject jso);
