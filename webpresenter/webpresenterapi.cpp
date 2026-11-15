@@ -50,6 +50,10 @@ bool WebpresenterApi::onPropertyChange(QString property, QJsonValue value)
         return true;
     }
 
+    if (property=="/livestreams/0/activePlatform") {
+        qDebug() << value;
+    }
+
     qDebug("*** WebpresenterAPI onPropertyChange not handled");
 
     return false;
