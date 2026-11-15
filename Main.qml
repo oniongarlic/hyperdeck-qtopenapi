@@ -158,7 +158,7 @@ ApplicationWindow {
         }
 
         onStreamInfo: {
-            console.debug(getBitrate(), getCache())
+            console.debug(getStatus(), getBitrate(), "/" , getCache())
         }
 
         onProductInformation: {
@@ -169,7 +169,7 @@ ApplicationWindow {
             id: wps
 
             onSystemSupportedVideoFormatsGetFinished: (vf) => {
-                                                          console.debug(vf)
+                                                          console.debug(vf.getFormatsValue)
                                                       }
 
             onSystemSupportedVideoFormatsGetErrorOccurred: (et, es) => { console.debug("Error", et, es) }
@@ -245,6 +245,9 @@ ApplicationWindow {
         RowLayout {
             Label {
                 text: caa.timecode
+            }
+            Label {
+                text: wpa.bitrate
             }
         }
     }
