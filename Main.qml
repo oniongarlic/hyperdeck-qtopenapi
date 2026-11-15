@@ -184,6 +184,12 @@ ApplicationWindow {
 
             onLivestreamsCustomPlatformsGetFinished: (vf) =>{
                                                          console.debug(vf)
+                                                         livestreamsCustomPlatformsFilenameGet(vf)
+            }
+
+            onLivestreamsCustomPlatformsFilenameGetFinished: (summary) => {
+                                                                 console.debug(summary)
+
             }
 
             onLivestreamsCustomPlatformsGetErrorOccurred: (et, es) => { console.debug("Error", et, es) }
