@@ -157,8 +157,48 @@ ApplicationWindow {
             console.debug("Error connecting")
         }
 
+        onStreamInfo: {
+            console.debug(getStatus(), getBitrate(), "/" , getCache())
+        }
+
+        onProductInformation: {
+            console.debug(getProduct(), getDevice(), getVersion())
+        }
+
         WebpresenterSystem {
             id: wps
+
+            onSystemSupportedVideoFormatsGetFinished: (vf) => {
+                                                          console.debug(vf.getFormatsValue)
+                                                      }
+
+            onSystemSupportedVideoFormatsGetErrorOccurred: (et, es) => { console.debug("Error", et, es) }
+        }
+
+        WebpresenterEvent {
+            id: wpe
+        }
+
+        WebpresenterLiveStream {
+            id: wpls
+
+            onLivestreamsCustomPlatformsGetFinished: (vf) =>{
+                                                         console.debug(vf)
+                                                         livestreamsCustomPlatformsFilenameGet(vf)
+            }
+
+            onLivestreamsCustomPlatformsFilenameGetFinished: (summary) => {
+                                                                 console.debug(summary)
+
+            }
+
+            onLivestreamsCustomPlatformsGetErrorOccurred: (et, es) => { console.debug("Error", et, es) }
+
+            onLivestreamsPlatformsGetFinished: (vf) => {
+                                                   console.debug(vf)
+            }
+
+            onLivestreamsPlatformsGetErrorOccurred: (et, es) => { console.debug("Error", et, es) }
         }
     }
 
@@ -212,6 +252,9 @@ ApplicationWindow {
             Label {
                 text: caa.timecode
             }
+            Label {
+                text: wpa.bitrate
+            }
         }
     }
 
@@ -222,6 +265,11 @@ ApplicationWindow {
 
         ColumnLayout {
             spacing: 8
+
+            Label {
+                text: "Camera"
+            }
+
             Button {
                 text: "AutoFocus"
                 onClicked: cla.lensFocusDoAutoFocusPut();
@@ -260,6 +308,40 @@ ApplicationWindow {
 
         ColumnLayout {
             spacing: 8
+
+            Label {
+                text: "Webpresenter"
+            }
+
+            Button {
+                text: "Formats"
+                onClicked: wps.systemSupportedVideoFormatsGet();
+            }
+
+            Button {
+                text: "CustomPlatforms"
+                onClicked: wpls.livestreamsCustomPlatformsGet()
+            }
+            Button {
+                text: "Platforms"
+                onClicked: wpls.livestreamsPlatformsGet()
+            }
+            Button {
+                text: "Start"
+                onClicked: wpls.livestreams0StartPut()
+            }
+            Button {
+                text: "Stop"
+                onClicked: wpls.livestreams0StopPut()
+            }
+        }
+
+        ColumnLayout {
+            spacing: 8
+            Label {
+                text: "Hyperdeck"
+            }
+
             Button {
                 text: "Play"
                 onClicked: {

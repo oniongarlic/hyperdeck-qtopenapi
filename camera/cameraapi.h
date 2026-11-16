@@ -32,5 +32,3 @@ protected:
     void onSubscribeHandler(QJsonObject jso);
 
 };
-
-#pragma once

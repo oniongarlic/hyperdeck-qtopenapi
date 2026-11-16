@@ -31,14 +31,23 @@ qt_add_openapi_client(webpresenterEventClientLibrary
     GENERATE_OPTIONS --api-name-suffix WebpresenterEventApi
 )
 
-#qt_add_library(webpresenterLivestreamClientLibrary)
-#qt_add_openapi_client(webpresenterLivestreamClientLibrary
-#    SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/webpresenter/LivestreamControl.yaml
-#    OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/webpresenter_livestream_api/
-#    OUTPUT_PUBLIC_HEADERS_DIR ${CMAKE_CURRENT_BINARY_DIR}/webpresenter_livestream_api/
-#    ADDITIONAL_PROPERTIES cppNamespace=BMWebpresenter
-#    GENERATE_OPTIONS --api-name-suffix WebpresenterLivestreamApi
-#)
+qt_add_library(webpresenterLivestreamClientLibrary)
+qt_add_openapi_client(webpresenterLivestreamClientLibrary
+    SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/webpresenter/LivestreamControl.yaml
+    OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/webpresenter_livestream_api/
+    OUTPUT_PUBLIC_HEADERS_DIR ${CMAKE_CURRENT_BINARY_DIR}/webpresenter_livestream_api/
+    ADDITIONAL_PROPERTIES cppNamespace=BMWebpresenter
+    GENERATE_OPTIONS --api-name-suffix WebpresenterLivestreamApi
+)
+
+qt_add_library(webpresenterMonitorOutputClientLibrary)
+qt_add_openapi_client(webpresenterMonitorOutputClientLibrary
+    SPEC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/webpresenter/MonitorOutput.yaml
+    OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/webpresenter_monitoroutput_api/
+    OUTPUT_PUBLIC_HEADERS_DIR ${CMAKE_CURRENT_BINARY_DIR}/webpresenter_monitoroutput_api/
+    ADDITIONAL_PROPERTIES cppNamespace=BMWebpresenter
+    GENERATE_OPTIONS --api-name-suffix WebpresenterMonitorOutputApi
+)
 
 qt_add_library(webpresenter_api STATIC)
 qt_add_qml_module(webpresenter_api
@@ -48,6 +57,7 @@ qt_add_qml_module(webpresenter_api
     SOURCES webpresenterapi.h webpresenterapi.cpp
     SOURCES webpresenterevent.cpp webpresenterevent.h
     SOURCES webpresentersystem.cpp webpresentersystem.h
+    SOURCES webpresenterlivestream.cpp webpresenterlivestream.h
 )
 
 target_include_directories(webpresenter_api INTERFACE ${CMAKE_CURRENT_BINARY_DIR})
@@ -56,6 +66,7 @@ target_link_libraries(webpresenter_api PRIVATE
     Qt6::Quick Qt6::WebSockets
     webpresenterSystemClientLibrary
     webpresenterEventClientLibrary
+    webpresenterLivestreamClientLibrary
 )
 
 target_compile_definitions(webpresenter_api PRIVATE WEBPRESENTER_LIBRARY)

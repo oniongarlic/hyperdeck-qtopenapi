@@ -1,5 +1,4 @@
-#ifndef BMBASE_H
-#define BMBASE_H
+#pragma once
 
 #include <QObject>
 #include <QQmlEngine>
@@ -54,4 +53,3 @@ protected:
     QQmlListProperty<QObject> endpoints();
 };
 
-#endif // BMBASE_H
