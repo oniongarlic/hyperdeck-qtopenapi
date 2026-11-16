@@ -29,6 +29,8 @@ signals:
 protected:
     long m_timecode;
     bool onPropertyChange(QString property, QJsonValue value);
+    void onSubscribeHandler(QJsonObject jso);
+
 };
 
 #pragma once

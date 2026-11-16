@@ -25,3 +25,8 @@ bool CameraApi::onPropertyChange(QString property, QJsonValue value)
 
     return false;
 }
+
+void CameraApi::onSubscribeHandler(QJsonObject jso)
+{
+    qDebug() << "CameraAPI: onSubscribeHandler" << jso;
+}
