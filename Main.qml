@@ -253,6 +253,30 @@ ApplicationWindow {
                 text: caa.timecode
             }
             Label {
+                text: "ISO: "+caa.iso
+            }
+            Label {
+                text: "G: "+caa.gain
+            }
+            Label {
+                text: caa.shutter
+            }
+            Label {
+                text: caa.whiteBalance
+            }
+            Label {
+                text: caa.tint
+            }
+            Label {
+                text: caa.zoom
+            }
+            Label {
+                text: caa.focus
+            }
+            Label {
+                text: caa.iris
+            }
+            Label {
                 text: wpa.bitrate
             }
         }
