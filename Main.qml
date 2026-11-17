@@ -144,6 +144,7 @@ ApplicationWindow {
     WebpresenterApi {
         id: wpa
         hostname: "192.168.0.234"
+        debug: true
         Component.onCompleted: {
 
         }
@@ -152,12 +153,14 @@ ApplicationWindow {
         }
 
         onStreamInfo: {
-            console.debug(getStatus(), getBitrate(), "/" , getCache())
+            // console.debug(getStatus(), getBitrate(), "/" , getCache())
         }
 
         onProductInformation: {
             console.debug(getProduct(), getDevice(), getVersion())
         }
+
+        onPlatforms: console.debug(getPlatsforms())
 
         WebpresenterSystem {
             id: wps
