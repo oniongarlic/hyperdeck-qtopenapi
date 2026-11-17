@@ -14,6 +14,7 @@ class BMBase : public QObject
     Q_CLASSINFO("DefaultProperty", "endpoints")
 
     Q_PROPERTY(QString hostname READ hostname WRITE setHostname NOTIFY hostnameChanged FINAL)
+    Q_PROPERTY(bool debug READ debug WRITE setDebug NOTIFY debugChanged FINAL)
 
 public:
     explicit BMBase(QObject *parent = nullptr);
@@ -28,11 +29,16 @@ public:
     QString hostname() const;
     void setHostname(const QString &newHostname);
 
+    bool debug() const;
+    void setDebug(bool newDebug);
+
 signals:
     void connectionError(int error);
     void propertyChanged(QString property, QJsonValue value);
     void hostnameChanged();
     void responseError(QString message);
+
+    void debugChanged();
 
 protected slots:
     void onWsConnected();
@@ -44,6 +50,7 @@ protected:
     QString m_hostname;
     QString m_protocol="http";
     QWebSocket m_ws;
+    bool m_debug=false;
 
     QList<QtOpenApiCommon::QOAIBaseApi *>m_oac;
 

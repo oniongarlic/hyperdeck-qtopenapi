@@ -73,9 +73,20 @@ void BMBase::handleResponseMessage(QJsonObject rm)
     }
 
     if (a=="subscribe") {
-        auto v=rm.value("values").toObject();
+        auto props=rm.value("properties").toArray();
+        auto values=rm.value("values").toObject();
+        for (const auto &oa : std::as_const(props)) {
+            auto prop=oa.toString();
+            auto value=values.value(prop);
 
-        onSubscribeHandler(v);
+            if (onPropertyChange(prop, value)==false) {
+                qDebug() << "Unhandled property" << prop << value;
+
+                emit propertyChanged(prop, value);
+            }
+        }
+
+        onSubscribeHandler(values);
 
         return;
     }
@@ -175,6 +186,9 @@ void BMBase::onWsTextMessageReceived(QString message)
         return;
     }
 
+    if (m_debug)
+        qDebug().noquote() << "*** WS-MESSAGE:"<< j.toJson();
+
     auto d=j.object().value("data").toObject();    
     auto t=j.object().value("type").toString();
 
@@ -222,4 +236,17 @@ void BMBase::setHostname(const QString &newHostname)
         return;
     m_hostname = newHostname;
     emit hostnameChanged();
+}
+
+bool BMBase::debug() const
+{
+    return m_debug;
+}
+
+void BMBase::setDebug(bool newDebug)
+{
+    if (m_debug == newDebug)
+        return;
+    m_debug = newDebug;
+    emit debugChanged();
 }
