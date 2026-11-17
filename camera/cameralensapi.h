@@ -11,5 +11,7 @@ class CameraLensApi : public BMCamera::DefaultCameraLensApi
     QML_ELEMENT
 public:
     explicit CameraLensApi(QObject *parent = nullptr);
+
+    Q_INVOKABLE void setZoom(double zoom);
 };
 

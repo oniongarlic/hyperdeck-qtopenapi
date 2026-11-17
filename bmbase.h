@@ -29,7 +29,7 @@ public:
     void setHostname(const QString &newHostname);
 
 signals:
-    void connectionError();
+    void connectionError(int error);
     void propertyChanged(QString property, QJsonValue value);
     void hostnameChanged();
     void responseError(QString message);
@@ -50,6 +50,10 @@ protected:
     virtual void onSubscribeHandler(QJsonObject jso);
     virtual bool onPropertyChange(QString property, QJsonValue value);
     virtual void onListProperties(QJsonArray properties);
+
     QQmlListProperty<QObject> endpoints();
+
+    void handleResponseMessage(QJsonObject rm);
+    void handleEventMessage(QJsonObject em);
 };
 

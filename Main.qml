@@ -18,12 +18,6 @@ ApplicationWindow {
         id: caa
         hostname: "192.168.0.141"
 
-        Component.onCompleted: {
-            caa.open();
-            csa.systemGet();
-            csa.systemFormatGet();
-        }
-
         CameraSystemApi {
             id: csa
 
@@ -88,7 +82,7 @@ ApplicationWindow {
         id: hdd
         hostname: "192.168.0.233"
         Component.onCompleted: {
-            hdd.open();
+
         }
         onConnectionError: {
             console.debug("Error connecting")
@@ -151,7 +145,7 @@ ApplicationWindow {
         id: wpa
         hostname: "192.168.0.234"
         Component.onCompleted: {
-            wpa.open();
+
         }
         onConnectionError: {
             console.debug("Error connecting")
@@ -185,18 +179,18 @@ ApplicationWindow {
             onLivestreamsCustomPlatformsGetFinished: (vf) =>{
                                                          console.debug(vf)
                                                          livestreamsCustomPlatformsFilenameGet(vf)
-            }
+                                                     }
 
             onLivestreamsCustomPlatformsFilenameGetFinished: (summary) => {
                                                                  console.debug(summary)
 
-            }
+                                                             }
 
             onLivestreamsCustomPlatformsGetErrorOccurred: (et, es) => { console.debug("Error", et, es) }
 
             onLivestreamsPlatformsGetFinished: (vf) => {
                                                    console.debug(vf)
-            }
+                                               }
 
             onLivestreamsPlatformsGetErrorOccurred: (et, es) => { console.debug("Error", et, es) }
         }
@@ -293,6 +287,10 @@ ApplicationWindow {
             Label {
                 text: "Camera"
             }
+            Button {
+                text: "Connect..."
+                onClicked: caa.open();
+            }
 
             Button {
                 text: "AutoFocus"
@@ -315,18 +313,34 @@ ApplicationWindow {
                 text: "Get ISO"
                 onClicked: cva.videoIsoGet()
             }
-            Button {
-                text: "ISO 400"
-                onClicked: cva.setIso(400)
-            }
-            Button {
-                text: "ISO 500"
-                onClicked: cva.setIso(500)
+            RowLayout {
+                Layout.fillWidth: true
+                Button {
+                    text: "200"
+                    onClicked: cva.setIso(200)
+                }
+                Button {
+                    text: "400"
+                    onClicked: cva.setIso(400)
+                }
+                Button {
+                    text: "500"
+                    onClicked: cva.setIso(500)
+                }
             }
 
             Button {
                 text: "Record"
                 onClicked: cta.transports0RecordPut()
+            }
+
+            Slider {
+                from: 0
+                to: 1
+                live: false
+                stepSize: 0.05
+                wheelEnabled: true
+                onValueChanged: cla.setZoom(value)
             }
         }
 
@@ -335,6 +349,10 @@ ApplicationWindow {
 
             Label {
                 text: "Webpresenter"
+            }
+            Button {
+                text: "Connect..."
+                onClicked: wpa.open();
             }
 
             Button {
@@ -364,6 +382,10 @@ ApplicationWindow {
             spacing: 8
             Label {
                 text: "Hyperdeck"
+            }
+            Button {
+                text: "Connect..."
+                onClicked: hdd.open();
             }
 
             Button {

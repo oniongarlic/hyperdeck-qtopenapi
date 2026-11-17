@@ -52,12 +52,73 @@ QQmlListProperty<QObject> BMBase::endpoints()
                                      nullptr, nullptr, nullptr);
 }
 
+void BMBase::handleResponseMessage(QJsonObject rm)
+{
+    auto a=rm.value("action").toString();
+
+    if (a=="listProperties") {
+        auto props=rm.value("properties").toArray();
+
+        // We could do this, but if there is an error (for example camera with no media) the response will be just the error and no values
+        // m_ws.sendTextMessage(makeJsonArray("request", "subscribe", "properties", props));
+        for (const auto &oa : std::as_const(props)) {
+            QJsonArray a;
+            a.append(oa);
+            m_ws.sendTextMessage(makeJsonArray("request", "subscribe", "properties", a));
+        }
+
+        onListProperties(props);
+
+        return;
+    }
+
+    if (a=="subscribe") {
+        auto v=rm.value("values").toObject();
+
+        onSubscribeHandler(v);
+
+        return;
+    }
+}
+
+void BMBase::handleEventMessage(QJsonObject em)
+{
+    auto s=em.value("success").toBool();
+    if (s==false && em.contains("errorMessage")) {
+        auto er=em.value("errorMessage").toString();
+        qDebug() << "Error:" << er;
+        emit responseError(er);
+        return;
+    }
+
+    auto a=em.value("action").toString();
+
+    if (a=="propertyValueChanged") {
+        auto prop=em.value("property").toString();
+        auto value=em.value("value");
+
+        if (onPropertyChange(prop, value)==false) {
+            qDebug() << "Unhandled property" << prop << value << value.isObject() << value.isArray() << value.isString() << value.isBool();
+
+            emit propertyChanged(prop, value);
+        }
+
+        return;
+    }
+
+    if (a=="websocketOpened") {
+        qDebug() << "websocketOpened" << m_hostname;
+        return;
+    }
+
+}
+
 void BMBase::setServer(QString hostname, QString protocol)
 {
     m_hostname=hostname;
     m_protocol=protocol;
 
-    foreach (auto oa, m_oac) {
+    for (const auto &oa : std::as_const(m_oac)) {
         setApiServer(oa);
     }
 }
@@ -65,7 +126,7 @@ void BMBase::setServer(QString hostname, QString protocol)
 void BMBase::setApiServer(QtOpenApiCommon::QOAIBaseApi *api) {
     auto ops=api->operations();
 
-    foreach (auto op, ops) {
+    for (const auto &op : std::as_const(ops)) {
         api->setServerVariable(op, 0, "hostname", m_hostname);
         api->setServerVariable(op, 0, "protocol", m_protocol);
     }
@@ -110,84 +171,44 @@ void BMBase::onWsTextMessageReceived(QString message)
 
     if (!j.isObject()) {
         qWarning("Not an object ?");
-        emit connectionError();
+        emit connectionError(255);
         return;
     }
 
-    auto d=j.object().value("data").toObject();
-    auto a=d.value("action");
+    auto d=j.object().value("data").toObject();    
     auto t=j.object().value("type").toString();
 
-    if (a.toString()=="listProperties") {
-        auto props=d.value("properties").toArray();
-
-        m_ws.sendTextMessage(makeJsonArray("request", "subscribe", "properties", props));
-
-        onListProperties(props);
-
-        return;
-    }
-
-    if (a.toString()=="subscribe") {
-        auto v=d.value("values").toObject();
-
-        onSubscribeHandler(v);
-
-        return;
-    }
-
-    if (a.toString()=="propertyValueChanged") {
-        auto prop=d.value("property").toString();
-        auto value=d.value("value");
-
-        if (onPropertyChange(prop, value)==false) {
-            qDebug() << "Unhandled property" << prop << value << value.isObject() << value.isArray() << value.isString() << value.isBool();
-
-            emit propertyChanged(prop, value);
-        }
-
-        return;
-    }
-
-    if (a.toString()=="websocketOpened") {
-        qDebug("websocketOpened");
-        return;
-    }
-
     if (t=="response") {
-        if (d.contains("errorMessage")) {
-            auto er=d.value("errorMessage").toString();
-            qDebug() << "Error:" << er;
-            emit responseError(er);
-            return;
-        }
+        handleResponseMessage(d);
+        return;
+    } else if (t=="event") {
+        handleEventMessage(d);
+        return;
     }
 
-    qDebug() << "Unhandled WS message:" << a.toString() << j;
+    qDebug().noquote() << "Unhandled WS message:" << j;
 }
 
 void BMBase::onWsErrorOccurred(QAbstractSocket::SocketError error)
 {
     qDebug() << "WSE" << error;
 
-    emit connectionError();
+    emit connectionError(error);
 }
 
 void BMBase::onSubscribeHandler(QJsonObject jso)
 {
-    qDebug() << "onSubscribeHandler" << jso;
+
 }
 
 bool BMBase::onPropertyChange(QString property, QJsonValue value)
 {
-    qDebug() << "onPropertyChange" << property << value;
-
     return false;
 }
 
 void BMBase::onListProperties(QJsonArray properties)
 {
-    qDebug() << "onListProperties" << properties;
+
 }
 
 QString BMBase::hostname() const
