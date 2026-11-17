@@ -28,10 +28,13 @@ public:
     Q_INVOKABLE QString getStatus() const { return m_status; }
     Q_INVOKABLE QString getFormat() const { return m_videoformat; }
 
+    Q_INVOKABLE QVariantList getPlatsforms() const { return m_platforms; }
+
 signals:
     void productInformation();
     void streamInfo();
     void bitrateChanged();
+    void platforms();
 
 protected:
     void onSubscribeHandler(QJsonObject jso);
@@ -45,5 +48,6 @@ private:
     uint32_t m_bitrate;
     uint32_t m_cache;
     QString m_videoformat;
+    QVariantList m_platforms;
     QString m_status;
 };

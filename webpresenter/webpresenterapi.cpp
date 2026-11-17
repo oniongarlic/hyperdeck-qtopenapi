@@ -26,11 +26,6 @@ void WebpresenterApi::onSubscribeHandler(QJsonObject jso)
 
         return;
     }
-
-    if (jso.contains("/system/supportedVideoFormats")) {
-        QVariantList tmp=jso.value("/system/supportedVideoFormats").toObject().value("videoFormats").toArray().toVariantList();
-        qDebug() << "Video formats" << tmp;
-    }
 }
 
 bool WebpresenterApi::onPropertyChange(QString property, QJsonValue value)
@@ -47,6 +42,12 @@ bool WebpresenterApi::onPropertyChange(QString property, QJsonValue value)
 
         emit streamInfo();
 
+        return true;
+    }
+
+    if (property=="/livestreams/platforms") {
+        m_platforms=value.toArray().toVariantList();
+        emit platforms();
         return true;
     }
 

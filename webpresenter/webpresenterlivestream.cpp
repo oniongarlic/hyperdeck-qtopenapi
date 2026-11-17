@@ -5,3 +5,13 @@ WebpresenterLiveStream::WebpresenterLiveStream(QObject *parent) : BMWebpresenter
 {
 
 }
+
+void WebpresenterLiveStream::start()
+{
+    livestreams0StartPut();
+}
+
+void WebpresenterLiveStream::stop()
+{
+    livestreams0StopPut();
+}

@@ -12,5 +12,8 @@ class WebpresenterLiveStream : public BMWebpresenter::LivestreamWebpresenterLive
 public:
     explicit WebpresenterLiveStream(QObject *parent = nullptr);
 
+    Q_INVOKABLE void start();
+    Q_INVOKABLE void stop();
+
 };
 
