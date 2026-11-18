@@ -15,3 +15,46 @@ void CameraLensApi::setZoom(double zoom)
     lensZoomPut(z);
 }
 
+void CameraLensApi::setFocus(double focus)
+{
+    BMCamera::_lens_focus_get_200_response f;
+
+    f.setFocus(std::clamp(focus, 0.0, 1.0));
+
+    lensFocusPut(f);
+}
+
+bool CameraLensApi::onPropertyChange(QString property, QJsonValue value)
+{
+    qDebug() << "CameraLensApi onPropertyChange" << property << value;
+
+    if (!value.isObject()) {
+        qWarning("Not an object ?");
+        return false;
+    }
+
+    auto o=value.toObject();
+
+    if (property=="/lens/focus") {
+        m_focus=o.value("normalised").toDouble();
+        emit focusChanged();
+        return true;
+    }
+
+    if (property=="/lens/zoom") {
+        m_zoom=o.value("normalised").toDouble();
+        m_focal=o.value("focalLength").toInt();
+        emit zoomChanged();
+        return true;
+    }
+
+    if (property=="/lens/iris") {
+        m_iris=o.value("normalised").toDouble();
+        m_aperture=o.value("apertureStop").toDouble();
+        emit irisChanged();
+        return true;
+    }
+
+    return false;
+}
+

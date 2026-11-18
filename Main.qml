@@ -44,11 +44,14 @@ ApplicationWindow {
         CameraLensApi {
             id: cla
 
-            onLensFocusDoAutoFocusPutErrorOccurred: (type, error) => { console.debug("Focus failed", type, error) }
+            onLensFocusDoAutoFocusPutErrorOccurred: (type, error) => { console.debug("AutoFocus failed", type, error) }
             onLensFocusDoAutoFocusPutFinished: () => {
-                                                   console.debug("Focused")
+                                                   console.debug("AutoFocused")
                                                    cla.lensFocusGet()
                                                }
+
+            onLensFocusPutErrorOccurred: (type, error) => { console.debug("Focus failed", type, error) }
+            onLensFocusPutFinished: console.debug("Focused")
 
             onLensFocusGetFinished: (f) => {
                                         console.debug("Focus:", f.getFocusValue)
@@ -344,6 +347,15 @@ ApplicationWindow {
                 stepSize: 0.05
                 wheelEnabled: true
                 onValueChanged: cla.setZoom(value)
+            }
+
+            Slider {
+                from: 0
+                to: 1
+                live: false
+                stepSize: 0.05
+                wheelEnabled: true
+                onValueChanged: cla.setFocus(value)
             }
         }
 

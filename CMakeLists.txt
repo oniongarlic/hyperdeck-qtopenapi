@@ -13,7 +13,8 @@ find_package(Qt6 REQUIRED COMPONENTS Qml Quick WebSockets OpenApiCommon OpenApiT
 
 qt_standard_project_setup(REQUIRES 6.11)
 
-qt_add_library(bmbase STATIC bmbase.h bmbase.cpp)
+qt_add_library(bmbase STATIC bmbase.h bmbase.cpp
+    bminterface.h)
 
 target_include_directories(bmbase PRIVATE Qt6::Quick Qt6::OpenApiCommon )
 target_link_libraries(bmbase PRIVATE Qt6::Quick Qt6::WebSockets Qt6::OpenApiCommon )
