@@ -63,6 +63,10 @@ ApplicationWindow {
             onLensIrisGetFinished: (z) => {
                                        console.debug("Iris:", z.getNormalisedValue)
                                    }
+
+            onZoomChanged: console.debug("ZoomC", zoom)
+            onFocusChanged: console.debug("FocusC", focus)
+            onIrisChanged: console.debug("IrisC", iris)
         }
 
         CameraTransportApi {
