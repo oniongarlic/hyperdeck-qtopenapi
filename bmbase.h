@@ -20,8 +20,7 @@ public:
     explicit BMBase(QObject *parent = nullptr);
     ~BMBase();
 
-    Q_INVOKABLE void setServer(QString hostname, QString protocol);
-    Q_INVOKABLE void setApiServer(QtOpenApiCommon::QOAIBaseApi *api);
+    void setApiServer(QtOpenApiCommon::QOAIBaseApi *api);
 
     Q_INVOKABLE void open();
     Q_INVOKABLE void close();
@@ -52,13 +51,11 @@ protected:
     QWebSocket m_ws;
     bool m_debug=false;
 
-    QList<QtOpenApiCommon::QOAIBaseApi *>m_oac;
-
     virtual void onSubscribeHandler(QJsonObject jso);
     virtual bool onPropertyChange(QString property, QJsonValue value);
     virtual void onListProperties(QJsonArray properties);
 
-    QQmlListProperty<QObject> endpoints();
+    QQmlListProperty<QObject> endpoints();    
 
     void handleResponseMessage(QJsonObject rm);
     void handleEventMessage(QJsonObject em);

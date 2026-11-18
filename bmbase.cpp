@@ -44,7 +44,7 @@ QQmlListProperty<QObject> BMBase::endpoints()
 
                                          if (auto sub = qobject_cast<QtOpenApiCommon::QOAIBaseApi*>(obj)) {
                                              qDebug() << "OAPI" << self->m_hostname << self->m_protocol << obj << sub->operations();
-                                             self->setApiServer(sub);
+                                             self->setApiServer(sub);                                             
 
                                              //QObject::connect(self, &BMBase::serverChanged, sub, &BMBase::setServer);
                                          }
@@ -122,16 +122,6 @@ void BMBase::handleEventMessage(QJsonObject em)
         return;
     }
 
-}
-
-void BMBase::setServer(QString hostname, QString protocol)
-{
-    m_hostname=hostname;
-    m_protocol=protocol;
-
-    for (const auto &oa : std::as_const(m_oac)) {
-        setApiServer(oa);
-    }
 }
 
 void BMBase::setApiServer(QtOpenApiCommon::QOAIBaseApi *api) {
