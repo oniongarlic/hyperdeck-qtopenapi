@@ -26,5 +26,9 @@ protected:
     QTime m_display;
     QTime m_timeline;
 
+    bool m_playing=false;
+    bool m_stopped=true;
+    bool m_recording=false;
+
 };
 
