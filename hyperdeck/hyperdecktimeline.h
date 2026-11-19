@@ -3,28 +3,30 @@
 #include <QObject>
 #include <QQmlEngine>
 
-#include "audiohyperdeckapi.h"
-#include "clipshyperdeckapi.h"
-#include "eventhyperdeckapi.h"
-#include "externalmediahyperdeckapi.h"
-#include "inputhyperdeckapi.h"
-#include "mediahyperdeckapi.h"
-#include "monitoringhyperdeckapi.h"
-#include "systemhyperdeckapi.h"
-#include "mediahyperdeckapi.h"
-#include "nashyperdeckapi.h"
-#include "playrangehyperdeckapi.h"
-#include "recordcachehyperdeckapi.h"
-#include "spillhyperdeckapi.h"
 #include "timelinehyperdeckapi.h"
-#include "transporthyperdeckapi.h"
 
-class HyperdeckTimeline : public BMHyperdeck::TimelineHyperdeckApi
+#include "../bminterface.h"
+
+#include "clipmodel.h"
+
+class HyperdeckTimeline : public BMHyperdeck::TimelineHyperdeckApi, public BMInterface
 {
     Q_OBJECT
     QML_ELEMENT
 public:
     explicit HyperdeckTimeline(QObject *parent = nullptr);
 
+    Q_INVOKABLE ClipModel* getClipsModel() { return &m_clip_model; }
+    Q_INVOKABLE QVariantMap getFormat() const { return m_format; }
+
+    bool onPropertyChange(QString property, QJsonValue value);
+
+signals:
+    void timelineUpdated();
+    void formatChanged();
+
+protected:
+    ClipModel m_clip_model;
+    QVariantMap m_format;
 };
 

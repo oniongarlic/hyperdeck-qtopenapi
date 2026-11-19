@@ -17,16 +17,9 @@ void CameraApi::setTimecode(long tc)
 
 bool CameraApi::onPropertyChange(QString property, QJsonValue value)
 {
-
-    auto c=findChildren<QtOpenApiCommon::QOAIBaseApi *>();
-
-    for (const auto &oa : std::as_const(c)) {
-        auto sub = dynamic_cast<BMInterface*>(oa);
-        if (sub) {
-            qDebug("Has BM Interface");
-            sub->onPropertyChange(property, value);
-        }
-    }
+    auto r=BMBase::onPropertyChange(property, value);
+    if (r)
+        return true;
 
     // "/transports/0/timecode" QJsonValue(object, QJsonObject({"clip":0,"timecode":285757700}))
     if (property=="/transports/0/timecode" && value.isObject()) {

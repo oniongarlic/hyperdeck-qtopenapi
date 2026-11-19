@@ -1,4 +1,5 @@
 #include "bmbase.h"
+#include "bminterface.h"
 
 static QString makeJson(QString type, QString action)
 {
@@ -207,6 +208,17 @@ void BMBase::onSubscribeHandler(QJsonObject jso)
 
 bool BMBase::onPropertyChange(QString property, QJsonValue value)
 {
+    auto c=findChildren<QtOpenApiCommon::QOAIBaseApi *>();
+
+    for (const auto &oa : std::as_const(c)) {
+        auto sub = dynamic_cast<BMInterface*>(oa);
+        if (sub) {
+            bool r=sub->onPropertyChange(property, value);
+            if (r)
+                return r;
+        }
+    }
+
     return false;
 }
 

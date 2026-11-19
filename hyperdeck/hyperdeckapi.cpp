@@ -38,6 +38,10 @@ void HyperdeckApi::onSubscribeHandler(QJsonObject jso)
 
 bool HyperdeckApi::onPropertyChange(QString property, QJsonValue value)
 {
+    auto r=BMBase::onPropertyChange(property, value);
+    if (r)
+        return true;
+
     // "/transports/0/timecode" QJsonValue(object, QJsonObject({"display":"13:20:58:16","timeline":"00:13:44:06"}))
     if (property=="/transports/0/timecode" && value.isObject()) {
         auto sdisplay=value.toObject().value("display").toString();

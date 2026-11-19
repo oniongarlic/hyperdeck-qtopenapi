@@ -146,6 +146,19 @@ ApplicationWindow {
             id: hdNas
         }
 
+        HyperdeckTimeline {
+            id: hdt
+
+            onFormatChanged: {
+                console.debug(getFormat())
+            }
+
+        }
+
+        HyperdeckMedia {
+            id: hdm
+        }
+
     }
 
     WebpresenterApi {
@@ -435,7 +448,7 @@ ApplicationWindow {
                     Layout.fillHeight: true
                     Layout.fillWidth: true
 
-                    model: hdd.getClipsModel()
+                    model: hdt.getClipsModel()
                     clip: true
 
                     delegate: ItemDelegate {
