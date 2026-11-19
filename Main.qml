@@ -172,15 +172,7 @@ ApplicationWindow {
             console.debug("Error connecting")
         }
 
-        onStreamInfo: {
-            // console.debug(getStatus(), getBitrate(), "/" , getCache())
-        }
 
-        onProductInformation: {
-            console.debug(getProduct(), getDevice(), getVersion())
-        }
-
-        onPlatforms: console.debug(getPlatsforms())
 
         WebpresenterSystem {
             id: wps
@@ -190,6 +182,11 @@ ApplicationWindow {
                                                       }
 
             onSystemSupportedVideoFormatsGetErrorOccurred: (et, es) => { console.debug("Error", et, es) }
+
+            onProductInformation: {
+                console.debug(getProduct(), getDevice(), getVersion())
+            }
+
         }
 
         WebpresenterEvent {
@@ -198,6 +195,12 @@ ApplicationWindow {
 
         WebpresenterLiveStream {
             id: wpls
+
+            onStreamInfo: {
+                // console.debug(getStatus(), getBitrate(), "/" , getCache())
+            }
+
+            onPlatforms: console.debug(getPlatsforms())
 
             onLivestreamsCustomPlatformsGetFinished: (vf) =>{
                                                          console.debug(vf)
@@ -294,7 +297,7 @@ ApplicationWindow {
                 text: caa.iris
             }
             Label {
-                text: wpa.bitrate
+                text: wpls.bitrate
             }
         }
     }
