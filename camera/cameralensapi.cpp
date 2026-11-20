@@ -15,11 +15,19 @@ void CameraLensApi::setZoom(double zoom)
     lensZoomPut(z);
 }
 
+void CameraLensApi::setIris(double focal)
+{
+    BMCamera::_lens_iris_put_request i;
+    i.setNormalised(focal);
+
+    lensIrisPut(i);
+}
+
 void CameraLensApi::setFocus(double focus)
 {
     BMCamera::_lens_focus_get_200_response f;
 
-    f.setFocus(std::clamp(focus, 0.0, 1.0));
+    f.setNormalised(std::clamp(focus, 0.0, 1.0));
 
     lensFocusPut(f);
 }

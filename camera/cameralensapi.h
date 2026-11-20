@@ -20,6 +20,7 @@ public:
     explicit CameraLensApi(QObject *parent = nullptr);
 
     Q_INVOKABLE void setZoom(double zoom);
+    Q_INVOKABLE void setIris(double focal);
     Q_INVOKABLE void setFocus(double focus);
 
     Q_INVOKABLE double getZoom() const { return m_zoom; }
