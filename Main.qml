@@ -273,19 +273,19 @@ ApplicationWindow {
                 text: cta.timecode
             }
             Label {
-                text: "ISO: "+caa.iso
+                text: "ISO: "+cva.iso
             }
             Label {
-                text: "G: "+caa.gain
+                text: "G: "+cva.gain
             }
             Label {
-                text: caa.shutter
+                text: cva.shutter
             }
             Label {
-                text: caa.whiteBalance
+                text: cva.whiteBalance
             }
             Label {
-                text: caa.tint
+                text: cva.tint
             }
             Label {
                 text: cla.zoom
