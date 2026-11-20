@@ -270,7 +270,7 @@ ApplicationWindow {
     footer: ToolBar {
         RowLayout {
             Label {
-                text: caa.timecode
+                text: cta.timecode
             }
             Label {
                 text: "ISO: "+caa.iso
@@ -288,13 +288,13 @@ ApplicationWindow {
                 text: caa.tint
             }
             Label {
-                text: caa.zoom
+                text: cla.zoom
             }
             Label {
-                text: caa.focus
+                text: cla.focus
             }
             Label {
-                text: caa.iris
+                text: cla.iris
             }
             Label {
                 text: wpls.bitrate
@@ -315,7 +315,13 @@ ApplicationWindow {
             }
             Button {
                 text: "Connect..."
+                enabled: !caa.connected
                 onClicked: caa.open();
+            }
+            Button {
+                text: "Close"
+                enabled: caa.connected
+                onClicked: caa.close();
             }
 
             Button {
@@ -331,6 +337,23 @@ ApplicationWindow {
                 text: "Get Zoom"
                 onClicked: cla.lensZoomGet()
             }
+
+            RowLayout {
+                Layout.fillWidth: true
+                Button {
+                    text: "14"
+                    onClicked: cla.setFocal(14)
+                }
+                Button {
+                    text: "35"
+                    onClicked: cla.setFocal(35)
+                }
+                Button {
+                    text: "42"
+                    onClicked: cla.setFocal(42)
+                }
+            }
+
             Button {
                 text: "Get Iris"
                 onClicked: cla.lensIrisGet()
