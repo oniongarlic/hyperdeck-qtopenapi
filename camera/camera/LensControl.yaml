@@ -96,7 +96,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  focus:
+                  normalised:
                     $ref: '#/components/schemas/normalised'
     put:
       summary: Set lens' focus
@@ -106,7 +106,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  focus:
+                  normalised:
                     $ref: '#/components/schemas/normalised'
       responses:
         200:
