@@ -44,26 +44,6 @@ bool CameraApi::onPropertyChange(QString property, QJsonValue value)
         return true;
     }
 
-    if (property=="/lens/focus" && value.isObject()) {
-        m_focus=value.toObject().value("normalised").toDouble();
-        emit focusChanged();
-        return true;
-    }
-
-    if (property=="/lens/zoom" && value.isObject()) {
-        m_zoom=value.toObject().value("normalised").toDouble();
-        m_focal=value.toObject().value("focalLength").toInt();
-        emit zoomChanged();
-        return true;
-    }
-
-    if (property=="/lens/iris" && value.isObject()) {
-        m_iris=value.toObject().value("normalised").toDouble();
-        m_aperture=value.toObject().value("apertureStop").toDouble();
-        emit irisChanged();
-        return true;
-    }
-
     qDebug("*** CameraAPI onPropertyChange not handled");
 
     return false;

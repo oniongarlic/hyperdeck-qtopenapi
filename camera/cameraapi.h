@@ -20,11 +20,6 @@ class CameraApi : public BMBase
 
     Q_PROPERTY(int shutter READ getShutter NOTIFY shutterChanged FINAL)
 
-    // Normalized values, use getter for other
-    Q_PROPERTY(double zoom READ getZoom NOTIFY zoomChanged FINAL)
-    Q_PROPERTY(double iris READ getIris NOTIFY irisChanged FINAL)
-    Q_PROPERTY(double focus READ getFocus NOTIFY focusChanged FINAL)
-
 public:
     explicit CameraApi(QObject *parent = nullptr);
 
@@ -36,12 +31,6 @@ public:
 
     Q_INVOKABLE int getShutter() const { return m_shutter; }
 
-    Q_INVOKABLE double getZoom() const { return m_zoom; }
-    Q_INVOKABLE uint getFocal() const { return m_focal; }
-    Q_INVOKABLE double getIris() const { return m_iris; }
-    Q_INVOKABLE uint getAperture() const { return m_aperture; }
-    Q_INVOKABLE double getFocus() const { return m_focus; }
-
 signals: 
     void isoChanged();
     void gainChanged();
@@ -49,10 +38,7 @@ signals:
     void tintChanged();
     void shutterChanged();
     void formatChanged();
-    void timelineChanged();
-    void focusChanged();
-    void zoomChanged();
-    void irisChanged();
+    void timelineChanged();    
     void propertyChange(QString property, QJsonValue value);
 
 protected:    
@@ -64,10 +50,5 @@ private:
     int m_gain=0;
     uint m_shutter=0;
     int m_tint=0;
-    uint m_whitebalance=0;
-    double m_focus=0;
-    double m_iris=0;
-    double m_aperture=0;
-    double m_zoom=0;
-    uint m_focal=0;
+    uint m_whitebalance=0;    
 };
