@@ -8,8 +8,11 @@ HyperdeckTimeline::HyperdeckTimeline(QObject *parent) : BMHyperdeck::TimelineHyp
 
 bool HyperdeckTimeline::onPropertyChange(QString property, QJsonValue value)
 {
+
+    auto o=value.toObject();
+
     if (property=="/timelines/0") {
-        QVariantList tmp=value.toObject().value("clips").toArray().toVariantList();
+        QVariantList tmp=o.value("clips").toArray().toVariantList();
         m_clip_model.setItems(tmp);
 
         emit timelineUpdated();
@@ -18,7 +21,7 @@ bool HyperdeckTimeline::onPropertyChange(QString property, QJsonValue value)
     }
 
     if (property=="/timelines/0/videoFormat") {
-        m_format=value.toObject().value("videoFormat").toObject().toVariantMap();
+        m_format=o.value("videoFormat").toObject().toVariantMap();
 
         emit formatChanged();
 
