@@ -8,24 +8,11 @@ CameraApi::CameraApi(QObject *parent)
 
 }
 
-void CameraApi::setTimecode(long tc)
-{
-    m_timecode=tc;
-
-    emit timecodeChanged();
-}
-
 bool CameraApi::onPropertyChange(QString property, QJsonValue value)
 {
     auto r=BMBase::onPropertyChange(property, value);
     if (r)
         return true;
-
-    // "/transports/0/timecode" QJsonValue(object, QJsonObject({"clip":0,"timecode":285757700}))
-    if (property=="/transports/0/timecode" && value.isObject()) {
-        setTimecode(value.toObject().value("timecode").toInteger());
-        return true;
-    }
 
     if (property=="/video/iso" && value.isObject()) {
         m_iso=value.toObject().value("iso").toInt(0);

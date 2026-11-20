@@ -32,10 +32,17 @@ void CameraLensApi::setFocus(double focus)
     lensFocusPut(f);
 }
 
+void CameraLensApi::setFocal(uint focal)
+{
+    BMCamera::_lens_zoom_get_200_response z;
+
+    z.setFocalLength(focal);
+
+    lensZoomPut(z);
+}
+
 bool CameraLensApi::onPropertyChange(QString property, QJsonValue value)
 {
-    qDebug() << "CameraLensApi onPropertyChange" << property << value;
-
     if (!value.isObject()) {
         qWarning("Not an object ?");
         return false;

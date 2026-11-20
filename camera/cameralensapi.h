@@ -22,6 +22,7 @@ public:
     Q_INVOKABLE void setZoom(double zoom);
     Q_INVOKABLE void setIris(double focal);
     Q_INVOKABLE void setFocus(double focus);
+    Q_INVOKABLE void setFocal(uint focal);
 
     Q_INVOKABLE double getZoom() const { return m_zoom; }
     Q_INVOKABLE uint getFocal() const { return m_focal; }

@@ -10,9 +10,8 @@
 class CameraApi : public BMBase
 {
     Q_OBJECT
-    QML_ELEMENT    
+    QML_ELEMENT
 
-    Q_PROPERTY(long timecode READ getTimecode NOTIFY timecodeChanged FINAL)
     Q_PROPERTY(uint iso READ getISO NOTIFY isoChanged FINAL)
     Q_PROPERTY(int gain READ getGain NOTIFY gainChanged FINAL)
 
@@ -29,7 +28,6 @@ class CameraApi : public BMBase
 public:
     explicit CameraApi(QObject *parent = nullptr);
 
-    Q_INVOKABLE long getTimecode() const { return m_timecode; }
     Q_INVOKABLE uint getISO() const { return m_iso; }
     Q_INVOKABLE int getGain() const { return m_gain; }
 
@@ -44,11 +42,7 @@ public:
     Q_INVOKABLE uint getAperture() const { return m_aperture; }
     Q_INVOKABLE double getFocus() const { return m_focus; }
 
-protected slots:
-    void setTimecode(long tc);
-
-signals:
-    void timecodeChanged();
+signals: 
     void isoChanged();
     void gainChanged();
     void whiteBalanceChanged();
@@ -61,8 +55,7 @@ signals:
     void irisChanged();
     void propertyChange(QString property, QJsonValue value);
 
-protected:
-    long m_timecode;
+protected:    
     bool onPropertyChange(QString property, QJsonValue value);
     void onSubscribeHandler(QJsonObject jso);
 
