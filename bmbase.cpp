@@ -153,6 +153,9 @@ void BMBase::close()
 {
     m_ws.close();
     m_ws.disconnect();
+
+    m_connected=false;
+    emit connectedChanged();
 }
 
 void BMBase::onWsConnected()
