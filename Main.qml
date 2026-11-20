@@ -452,25 +452,34 @@ ApplicationWindow {
             }
             Button {
                 text: "Connect..."
+                enabled: !hdd.connected
                 onClicked: hdd.open();
+            }
+            Button {
+                text: "Close"
+                enabled: hdd.connected
+                onClicked: hdd.close()
             }
 
             Button {
                 text: "Play"
+                enabled: !hdTransport.playing
                 onClicked: {
-                    hdTransport.transports0PlayPost();
+                    hdTransport.play();
                 }
             }
             Button {
                 text: "Record"
+                enabled: !hdTransport.recording
                 onClicked: {
-                    hdTransport.transports0RecordPost();
+                    hdTransport.record();
                 }
             }
             Button {
                 text: "Stop"
+                enabled: !hdTransport.stopped
                 onClicked: {
-                    hdTransport.transports0StopPost();
+                    hdTransport.stop()
                 }
             }
 
