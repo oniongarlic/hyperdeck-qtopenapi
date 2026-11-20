@@ -14,6 +14,9 @@ class BMBase : public QObject
     Q_CLASSINFO("DefaultProperty", "endpoints")
 
     Q_PROPERTY(QString hostname READ hostname WRITE setHostname NOTIFY hostnameChanged FINAL)
+
+    Q_PROPERTY(bool connected READ connected NOTIFY connectedChanged FINAL)
+
     Q_PROPERTY(bool debug READ debug WRITE setDebug NOTIFY debugChanged FINAL)
 
 public:
@@ -31,6 +34,8 @@ public:
     bool debug() const;
     void setDebug(bool newDebug);
 
+    bool connected() const;
+
 signals:
     void connectionError(int error);
     void propertyChanged(QString property, QJsonValue value);
@@ -38,6 +43,8 @@ signals:
     void responseError(QString message);
 
     void debugChanged();
+
+    void connectedChanged();
 
 protected slots:
     void onWsConnected();
@@ -59,5 +66,7 @@ protected:
 
     void handleResponseMessage(QJsonObject rm);
     void handleEventMessage(QJsonObject em);
+private:
+    bool m_connected=false;
 };
 

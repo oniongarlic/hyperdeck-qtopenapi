@@ -160,11 +160,17 @@ void BMBase::onWsConnected()
     qDebug() << "Websocket connected!" << m_hostname;
     connect(&m_ws, &QWebSocket::textMessageReceived, this, &BMBase::onWsTextMessageReceived);
     m_ws.sendTextMessage(makeJson("request", "listProperties"));
+
+    m_connected=true;
+    emit connectedChanged();
 }
 
 void BMBase::onWsDisconnected()
 {
     qDebug() << "Websocket disconnected" << m_hostname;
+
+    m_connected=false;
+    emit connectedChanged();
 }
 
 void BMBase::onWsTextMessageReceived(QString message)
@@ -251,4 +257,9 @@ void BMBase::setDebug(bool newDebug)
         return;
     m_debug = newDebug;
     emit debugChanged();
+}
+
+bool BMBase::connected() const
+{
+    return m_connected;
 }
