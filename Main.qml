@@ -54,7 +54,7 @@ ApplicationWindow {
             onLensFocusPutFinished: console.debug("Focused")
 
             onLensFocusGetFinished: (f) => {
-                                        console.debug("Focus:", f.getFocusValue)
+                                        console.debug("Focus:", f.getNormalisedValue)
                                     }
 
             onLensZoomGetFinished: (z) => {
@@ -373,6 +373,15 @@ ApplicationWindow {
                 stepSize: 0.05
                 wheelEnabled: true
                 onValueChanged: cla.setFocus(value)
+            }
+
+            Slider {
+                from: 0
+                to: 1
+                live: false
+                stepSize: 0.05
+                wheelEnabled: true
+                onValueChanged: cla.setIris(value)
             }
         }
 
