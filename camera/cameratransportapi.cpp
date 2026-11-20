@@ -17,8 +17,8 @@ bool CameraTransportApi::onPropertyChange(QString property, QJsonValue value)
 {
     auto o=value.toObject();
 
-    if (property=="/transports/0/timecode" && value.isObject()) {
-        setTimecode(value.toObject().value("timecode").toInteger());
+    if (property=="/transports/0/timecode") {
+        setTimecode(o.value("timecode").toInteger());
         return true;
     }
 
