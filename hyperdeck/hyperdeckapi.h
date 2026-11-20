@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QObject>
-#include <QQmlEngine>
 #include <QtWebSockets/QtWebSockets>
 #include <QDebug>
 
